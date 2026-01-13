@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Curso de programacion en Java RESUMEN</title>
+
+<style>
+
+/* -------- Base visual (mantengo tus estilos) -------- */
+body {
+  font-family: Arial, sans-serif;
+  background: #0f111a;
+  color: #cfd8dc;
+  margin: 0;
+  padding: 2rem;
+}
+
+article.ejercicios {
+  background: #1a2229;
+  padding: 20px 25px;
+  border-left: 4px solid #90caf9;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  margin: 1.5rem 0;
+}
+
+p { background: #1a2229; padding: 15px 20px; border-left: 4px solid #90caf9; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.35); margin: 1.2rem 0; line-height: 1.6; }
+
+/* Header */
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #0d47a1;
+  color: #fff;
+  padding: 15px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  z-index: 1000;
+  transition: transform .28s ease;
+}
+header h1 { margin: 0; font-size: 1.2rem; }
+
+/* mobile nav toggle button visual */
+#mobile-nav-toggle { margin-left:12px; background:transparent; color:#fff; border:0; font-size:1.1rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+
+/* Main layout */
+main { display:flex; margin-top:70px; }
+
+/* Zona hover para abrir el menú (desktop) */
+#hover-zone { position: fixed; top: 70px; left: 0; width: 40px; height: calc(100vh - 70px); z-index: 1049; }
+
+
+
+/* Section content */
+section { flex:1; padding:20px 40px; max-width:1000px; margin:auto; }
+h2,h3 { color:#90caf9; margin-top:2rem; border-bottom:2px solid #263238; padding-bottom:0.5rem; }
+
+/* Tables */
+table { width:100%; border-collapse: collapse; margin-bottom: 1rem; font-size:0.95rem; }
+th, td { border:1px solid #37474f; padding:8px 12px; text-align:left; vertical-align:top; }
+th { background-color:#263238; color:#90caf9; }
+tr:nth-child(even) { background-color:#1a2229; }
+
+/* Code blocks */
+pre { background:#0c0d12; color:#cfd8dc; padding:12px; border-radius:6px; overflow:auto; border:1px solid #161a20; }
+
+/* Helpers */
+.small-muted { color:#9fb6d6; font-size:0.92rem; }
+
+/* code + result layout */
+.code-table-wrapper { display:flex; gap:20px; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap; }
+.code-table-wrapper pre { flex:1; background:#1a1a1a; color:#cfd8dc; padding:12px; border-radius:6px; overflow-x:auto; }
+.code-table-wrapper .result-box { flex:1; margin-top:15px; background:#263238; color:#cfd8dc; padding:12px; border-radius:6px; min-width:200px; border:1px solid #90caf9; }
+@media (max-width:700px){ .code-table-wrapper{ flex-direction:column; } }
+
+/* Responsive tweaks */
+@media (max-width:900px){ nav { transform: translateX(0); position:relative; width:100%; height:auto; top:0; } #hover-zone{ display:none; } main{ margin-top:0; flex-direction:column; padding-top:20px; } section{ padding:12px; } }
+
+/* Mobile typography boost (opción solicitada) */
+@media (max-width:600px){ html{ font-size:17px; } header{ padding:12px; } }
+
+/* overlay for nav when expanded */
+nav.expanded::after { content: ''; position: fixed; inset:0; background: rgba(0,0,0,0.4); z-index:1049; }
+
+/* Navigation */
+nav { width:300px; background:#263238; padding:20px; height: calc(100vh - 70px); position: fixed; top:70px; left:0; overflow-y:auto; transform: translateX(-100%); transition: transform 0.25s ease; z-index:1050; }
+#hover-zone:hover + nav, nav:hover { transform: translateX(0); }
+nav h2 { font-size:1.05em; margin-bottom:10px; color:#90caf9; }
+nav a { display:block; margin:6px 0; text-decoration:none; color:#cfd8dc; transition:0.15s; font-size:0.95rem; }
+nav a:hover { color:#90caf9; }
+
+
+/* ---------- NAV DERECHO (correcciones) ---------- */
+
+/* Zona hover derecha (igual que antes) */
+#hover-zone-right {
+  position: fixed;
+  top: 70px;
+  right: 0;
+  width: 40px;
+  height: calc(100vh - 70px);
+  z-index: 1049;
+  /* background: rgba(255,0,0,0.02);  debug opcional */
+}
+
+/* Navegación derecha: aseguramos que LEFT no interfiera */
+nav#main-nav-right {
+  width: 300px;
+  background: #263238;
+  padding: 20px;
+  height: calc(100vh - 70px);
+  position: fixed;
+  top: 70px;
+  right: 0;                  /* pegado al borde derecho */
+  left: auto;                /* <- importante: anula left:0 heredado */
+  overflow-y: auto;
+  transform: translateX(100%);/* oculto hacia la derecha */
+  transition: transform 0.25s ease;
+  z-index: 1050;
+}
+
+/* Abre el nav derecho solo cuando el hover-zone-right lo activa o cuando el nav está en hover.
+   Esto evita que la regla genérica "nav:hover { transform: translateX(0) }" afecte otros casos. */
+#hover-zone-right:hover + nav#main-nav-right,
+nav#main-nav-right:hover {
+  transform: translateX(0);
+}
+
+/* Overlay cuando el nav derecho está expandido */
+nav#main-nav-right.expanded::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1049;
+}
+
+/* look & feel */
+nav#main-nav-right h2 { font-size:1.05em; margin-bottom:10px; color:#90caf9; }
+nav#main-nav-right a { display:block; margin:6px 0; text-decoration:none; color:#cfd8dc; transition:0.15s; font-size:0.95rem; }
+nav#main-nav-right a:hover { color:#90caf9; }
+
+/* Responsive: como antes */
+@media (max-width:900px) {
+  nav#main-nav-right {
+    transform: translateX(0);
+    position: relative;
+    width: 100%;
+    height: auto;
+    top: 0;
+    right: auto;
+    left: auto;
+  }
+  #hover-zone-right { display: none; }
+}
+
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; font-size: 0.95rem; }
+th, td { border: 1px solid #37474f; padding: 8px 12px; text-align: left; vertical-align: top; }
+th { background-color: #263238; color:#90caf9; }
+tr:nth-child(even) { background-color: #1a2229; }
+
+/* Code blocks */
+pre {
+  background:#0c0d12;
+  color:#cfd8dc;
+  padding:12px;
+  border-radius:6px;
+  overflow:auto;
+  border:1px solid #161a20;
+}
+
+/* Small helpers */
+.small-muted { color:#9fb6d6; font-size:0.92rem; }
+kbd { background:#161a20; padding:2px 6px; border-radius:4px; border:1px solid #263238; }
+
+/* Responsive tweaks */
+@media (max-width:900px){
+  nav { transform: translateX(0); position:relative; width:100%; height:auto; top:0; }
+  #hover-zone { display:none; }
+  main { margin-top: 0; flex-direction:column; padding-top:20px; }
+  section { padding: 12px; }
+}
+
+
+/* pequeños estilos complementarios para los botones y selects dentro de la sección */
+#quant-practice-wrapper select { font-size:14px; }
+#quant-practice-wrapper .quant-ex select:disabled { opacity:0.8; }
+#quant-practice-wrapper .quant-answer-note { font-style:italic; }
+
+
+.code-table-wrapper {
+  display: flex;
+  gap: 20px;           /* espacio entre columnas */
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;      /* se ajusta en móviles */
+}
+
+.code-table-wrapper pre {
+  flex: 1;
+  background: #1a1a1a;
+  color: #cfd8dc;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.code-table-wrapper table {
+  
+  flex: 1;
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 200px;
+}
+
+.code-table-wrapper table th,
+.code-table-wrapper table td {
+    margin-top: 15;
+
+  border: 1px solid #90caf9;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.code-table-wrapper table th {
+  
+  background-color: #263238;
+  color: #ffcc80;
+}
+
+/* Responsive: apilar en móviles */
+@media (max-width: 700px) {
+  .code-table-wrapper {
+    flex-direction: column;
+  }
+}
+
+.result-box {
+  flex: 1;
+  margin-top: 15px;
+  background: #263238;
+  color: #cfd8dc;
+  padding: 12px;
+  border-radius: 6px;
+  min-width: 200px;
+  border: 1px solid #90caf9;
+}
+
+/* Terminal estilo Kali Linux */
+.terminal {
+  background: #0b0f14;          /* negro azulado */
+  color: #c9d1d9;               /* texto claro */
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 16px 0;
+  font-family: "Fira Code", monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  box-shadow: 0 0 0 1px #1f2a36, 0 10px 30px rgba(0,0,0,.5);
+  overflow-x: auto;
+}
+
+/* Prompt estilo kali */
+.terminal .prompt {
+  color: #58a6ff;               /* azul Kali */
+}
+
+/* Usuario y host */
+.terminal .user {
+  color: #7ee787;               /* verde */
+}
+
+/* Comandos */
+.terminal .cmd {
+  color: #e6edf3;
+}
+
+/* Comentarios / explicación */
+.terminal .comment {
+  color: #8b949e;
+  font-style: italic;
+}
+
+/* Salida */
+.terminal .output {
+  color: #c9d1d9;
+}
+
+/* Errores */
+.terminal .error {
+  color: #ff7b72;
+}
+
+p code {
+  padding: 2px 5px;
+  font-size: 0.9em;
+  border-radius: 4px;
+  background: #161a20;
+}
+table code br {
+  line-height: 0.8;
+}
+
+table code {
+  display: inline-block;
+  padding: 6px 8px;
+  line-height: 1.25;     /* 🔥 antes 1.35 o default */
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  border-radius: 5px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  max-width: 100%;
+}
+table code {
+  display: block;
+}
+table code .keyword { color:#569cd6; font-weight:600; }
+table code .type { color:#4ec9b0; }
+table code .method { color:#dcdcaa; }
+table code .string { color:#ce9178; }
+table code .number { color:#b5cea8; }
+table code .comment { color:#6a9955; font-style:italic; }
+table code .annotation { color:#c586c0; }
+
+
+
+#floating-notes-2 {
+  position: fixed;
+  right: 100px;
+  top: 30px; /* Arriba de todo con margen */
+  width: 500px;
+  background: #0f1419;
+  border: 1px solid #1a2229;
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 800;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  box-sizing: border-box; /* importante */
+}
+
+#floating-notes-2 textarea {
+  width: 480px;
+  height: 500px; /* más espacio para saltos de línea */
+  background: #0f1419;
+  color: #fff;
+  border: 1px solid #1a2229;
+  border-radius: 6px;
+  padding: 6px; /* un poco más para comodidad al escribir */
+  resize: vertical;
+  box-sizing: border-box; /* importante */
+}
+.delete-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;  /* tamaño del icono */
+  color: #ff5252;     /* rojo para la basura */
+  padding: 0;          /* quitar padding que lo agranda */
+  margin: 0;           /* quitar márgenes */
+  line-height: 1;      /* que no haga caja extra */
+}
+
+.delete-btn:hover {
+  color: #ff1744;
+}
+
+
+.notes-collapsed {
+  position: static;
+}
+
+.notes-expanded {
+  position: fixed;
+  z-index: 9999;
+
+  width: 70vw;
+  max-width: 900px;
+  height: 300px;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background: #0f1419;
+  border: 2px solid #ffab40;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.7);
+}
+
+.notes-collapsed {
+  width: 100%;
+}
+
+
+select {
+  width: 100%;
+  min-width: 320px;   /* 👈 ESTO ES LO QUE FALTABA */
+  max-width: 820px;
+}
+
+table code .keyword { color:#569cd6; font-weight:600; }
+table code .method { color:#dcdcaa; }
+table code .string { color:#ce9178; }
+table code .number { color:#b5cea8; }
+table code .comment { color:#6a9955; font-style:italic; }
+
+
+.blank {
+  color: white;           /* gris claro */
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.blank.filled {
+  color:rgb(24, 143, 24);           /* azul */
+  font-weight: 700;
+}
+</style>
+</head>
+
+<body>
+
+<main>
+
+  <div id="hover-zone" aria-hidden="true"></div>
+
+
+<!-- ===================== NAV IZQUIERDO ===================== -->
+<nav id="main-nav" aria-label="Navegación del curso">
+
+<!-- ===================== NOTAS ===================== -->
+<div style="margin-bottom:12px; position:relative;">
+  <label for="main-prog-notes-java" style="color:#ffab40; font-weight:bold;">
+    Notas:
+    <button
+      id="expand-notes-java"
+      type="button"
+      style="
+        margin-left:8px;
+        font-size:12px;
+        cursor:pointer;
+        background:#1a2229;
+        color:#90caf9;
+        border:1px solid #263238;
+        border-radius:6px;
+        padding:2px 6px;
+      "
+      title="Expandir notas"
+    ></button>
+  </label>
+
+  <textarea
+    id="main-prog-notes-java"
+    class="notes-collapsed"
+    placeholder="Escribe tus notas aquí..."
+    style="
+      width:100%;
+      height:180px;
+      padding:6px;
+      border-radius:6px;
+      border:1px solid #1a2229;
+      background:#0f1419;
+      color:#fff;
+      resize:vertical;
+    "
+  ></textarea>
+</div>
+
+<h2 style="color:#ffd54f;">RESUMEN RESULTADOS Y FALLOS </h2>
+<label class="nav-item"><input type="checkbox" data-key="java-env"><a href="#resumen" style="color:#ffd54f;">➖ Resumen de Resultados</a></label>
+<label class="nav-item"><input type="checkbox" data-key="java-env"><a href="#resultados" style="color:#ffd54f;">➖ Preguntas Falladas</a></label>
+
+<h2 style="color:#ffd54f;">Lenguaje de Marcado  🌍 </h2>
+<label class="nav-item"><input type="checkbox" data-key="java-env"><a href="#html" style="color:#ffd54f;">➖ Quiz HTML</a></label>
+<label class="nav-item"><input type="checkbox" data-key="java-env"><a href="#css" style="color:#ffd54f;">➖ Quiz CSS</a></label>
+<label class="nav-item"><input type="checkbox" data-key="java-env"><a href="#lm" style="color:#ffd54f;">➖ Quiz LM</a></label>
+<label class="nav-item"><input type="checkbox" data-key="java-env"><a href="#xml" style="color:#ffd54f;">➖ Quiz XML</a></label>
+<hr style="border-color:#1a2229; margin-top:12px;">
+<br><br>
+
+
+<h2 style="color:#90caf9;">JAVA  👨🏼‍💻</h2>
+<label class="nav-item"><input type="checkbox" data-key="java-env"><a href="#programacionEstructurada" style="color:#90caf9;">➖ Quiz Programación Estructurada</a></label>
+<label class="nav-item"><input type="checkbox" data-key="java-env"><a href="#StringsArrays" style="color:#90caf9;">➖ Quiz Strings y Arrays</a></label>
+<label class="nav-item"><input type="checkbox" data-key="java-env"><a href="#Poo" style="color:#90caf9;">➖ Quiz POO</a></label>
+<label class="nav-item"><input type="checkbox" data-key="java-env"><a href="#Colecciones" style="color:#90caf9;">➖ Quiz Colecciones</a></label>
+<label class="nav-item"><input type="checkbox" data-key="java-env"><a href="#ExcepcionesFicheros" style="color:#90caf9;">➖ Quiz Excepciones Ficheros</a></label>
+<!-- <label class="nav-item"><input type="checkbox" data-key="java-env"><a href="#BBDD" style="color:#90caf9;">➖ Quiz BBDD </a></label> -->
+<hr style="border-color:#1a2229; margin-top:12px;">
+
+
+
+<br><br><br><br><br>
+</nav>
+<script>
+  // ================== PERSISTENCIA NOTAS ==================
+const notesTextarea = document.getElementById('main-prog-notes-java');
+const NOTES_KEY = 'notes-java';
+
+if (notesTextarea) {
+  // cargar notas
+  const savedNotes = localStorage.getItem(NOTES_KEY);
+  if (savedNotes !== null) {
+    notesTextarea.value = savedNotes;
+  }
+
+  // guardar en tiempo real
+  notesTextarea.addEventListener('input', () => {
+    localStorage.setItem(NOTES_KEY, notesTextarea.value);
+  });
+}
+// ================== PERSISTENCIA CHECKBOX NAV ==================
+const nav = document.getElementById('main-nav');
+
+if (nav) {
+  const items = nav.querySelectorAll('label.nav-item');
+
+  items.forEach((label, index) => {
+    const checkbox = label.querySelector('input[type="checkbox"]');
+    const link = label.querySelector('a');
+
+    if (!checkbox || !link) return;
+
+    const key = 'nav-check:' + link.getAttribute('href');
+
+    // restaurar estado
+    const saved = localStorage.getItem(key);
+    if (saved !== null) {
+      checkbox.checked = saved === 'true';
+    }
+
+    // guardar cambios
+    checkbox.addEventListener('change', () => {
+      localStorage.setItem(key, checkbox.checked);
+    });
+  });
+}
+</script>
+
+
+<style>
+#main-prog-progress{position:sticky;top:0;background:#0f1419;padding:10px;z-index:10;border-bottom:1px solid #1a2229}
+#main-prog-progress span{font-size:12px;color:#aaa}
+.progress-bar{width:100%;height:8px;background:#1a2229;border-radius:6px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#4caf50,#81c784);transition:width .3s ease}
+.nav-item{display:flex;align-items:center;gap:6px;margin-left:6px}
+.nav-item input{cursor:pointer;accent-color:#4caf50}
+</style>
+
+<!-- ===================== NAV DERECHO ===================== -->
+<div id="hover-zone-right" aria-hidden="true"></div>
+<nav id="main-nav-right" aria-label="Navegación secundaria">
+  
+
+  <a href="./index.html">🗂️ HOME</a>
+  <hr style="border-color:#1a2229; margin-top:12px;">
+
+  <h2 style="color:#90caf9;">Digitech 1r Semestre</h2>
+  <a href="./conceptsEnglish.html">➖ Technical English  🇺🇸</a>
+  <a href="./conceptsLM.html">➖ HTML & CSS & JSON</a>
+  <a href="./Test_LM.html">➖ Test LM</a>
+  <a href="./conceptsJavaReview.html">➖ Programación con Java </a>
+
+  <hr style="border-color:#1a2229; margin-top:12px;">
+  
+  <h2 style="color:#ff80ab;">Otros Cursos</h2>
+  <a href="./conceptsSpringBoot.html">➖ Curso de Java con Spring Boot</a>
+  <a href="./hacking.html">➖ Curso Hacking</a>
+  
+
+  <br><br><br><br>
+</nav>
+
+<section>
+
+<script>
+/* ======= STATS Y ERRORES GLOBALES ======= */
+window.GLOBAL_STATS = {};
+window.GLOBAL_ERRORS = [];
+
+/* ---------- TABLA RESUMEN ---------- */
+window.updateStats = function (topic, total, ok) {
+if (!GLOBAL_STATS[topic]) {
+  GLOBAL_STATS[topic] = {
+    total: 0,
+    ok: 0,
+    ko: 0
+  };
+}
+
+GLOBAL_STATS[topic].total += total;
+GLOBAL_STATS[topic].ok += ok;
+GLOBAL_STATS[topic].ko += (total - ok);
+
+  const tbody = document.querySelector('#stats-table tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = '';
+
+  let sumQ = 0, sumOK = 0, sumKO = 0;
+
+  Object.entries(GLOBAL_STATS).forEach(([topic, s]) => {
+    const avg = s.total ? Math.round((s.ok / s.total) * 100) : 0;
+
+    sumQ += s.total;
+    sumOK += s.ok;
+    sumKO += s.ko;
+
+    tbody.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td>${topic}</td>
+        <td>${s.total}</td>
+        <td style="color:#2ea44f;">${s.ok}</td>
+        <td style="color:#ff7a7a;">${s.ko}</td>
+        <td>${avg}%</td>
+      </tr>
+    `);
+  });
+
+  const globalAvg = sumQ ? Math.round((sumOK / sumQ) * 100) : 0;
+
+  document.getElementById('t-q').textContent = sumQ;
+  document.getElementById('t-ok').textContent = sumOK;
+  document.getElementById('t-ko').textContent = sumKO;
+  document.getElementById('t-avg').textContent = globalAvg + '%';
+};
+
+/* ---------- TABLA ERRORES ---------- */
+window.addGlobalError = function (topic, question, correct, explanation) {
+  GLOBAL_ERRORS.push({ topic, question, correct, explanation });
+  renderGlobalErrors();
+};
+
+window.renderGlobalErrors = function () {
+  const tbody = document.querySelector('#errors-table tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = '';
+
+  GLOBAL_ERRORS.forEach(err => {
+    const tr = document.createElement('tr');
+
+    const tdTema = document.createElement('td');
+    tdTema.textContent = err.topic;
+
+    const tdQ = document.createElement('td');
+    tdQ.textContent = err.question;
+
+    const tdC = document.createElement('td');
+    tdC.textContent = err.correct;
+    tdC.style.color = '#2ea44f';
+
+    const tdE = document.createElement('td');
+    tdE.textContent = err.explanation || '';
+
+    tr.append(tdTema, tdQ, tdC, tdE);
+    tbody.appendChild(tr);
+  });
+};
+</script>
+
+
+<!--📊 Resumen de Resultados-->
+<section id="global-stats" style="background:#0f1419;padding:12px;border-bottom:1px solid #1a2229;">
+  <h3 style="margin:0 0 8px 0;color:#ffd54f;" id="resumen">📊 Resumen de Resultados</h3>
+
+  <table id="stats-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+    <thead>
+      <tr style="background:#1a2229;">
+        <th>Tema</th>
+        <th>Preguntas</th>
+        <th>✔ Acertadas</th>
+        <th>✖ Erróneas</th>
+        <th>Nota (%)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr style="background:#161b22;font-weight:bold;">
+        <td>TOTAL</td>
+        <td id="t-q">0</td>
+        <td id="t-ok">0</td>
+        <td id="t-ko">0</td>
+        <td id="t-avg">0%</td>
+      </tr>
+    </tfoot>
+  </table>
+</section>
+<!-- ❌ Preguntas falladas -->
+<section id="global-errors" style="background:#0f1419;padding:12px;border-bottom:1px solid #1a2229;">
+  <h3 style="margin:0 0 8px 0;color:#ff7a7a;" id="resultados">❌ Preguntas falladas</h3>
+
+  <table id="errors-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+    <thead>
+      <tr style="background:#1a2229;">
+        <th>Tema</th>
+        <th>Question</th>
+        <th>Correct answer</th>
+        <th>Explanation</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+
+<h1>Lenguaje de Marcado  🌍</h1>
+<h2 id="html"> HTML </h2>
+<section id="quiz-html" class="practice-panel"></section>
+
+<h2 id="css"> CSS </h2>
+<section id="quiz-css" class="practice-panel"></section>
+
+<h2 id="lm"> LM </h2>
+<section id="quiz-lm" class="practice-panel"></section>
+
+<h2 id="xml"> XML </h2>
+<section id="quiz-xml" class="practice-panel"></section>
+
+<hr style="border-color:#1a2229; margin-top:20px;">
+<br>
+
+<h1>JAVA  👨🏼‍💻</h1>
+<h2 id="programacionEstructurada"> Programación Estructurada </h2>
+<section id="quiz-programacionEstructurada" class="practice-panel"></section>
+
+<h2 id="StringsArrays"> Strings y Arrays </h2>
+<section id="quiz-StringsArrays" class="practice-panel"></section>
+
+<h2 id="Poo"> Strings y Arrays </h2>
+<section id="quiz-Poo" class="practice-panel"></section>
+
+<h2 id="Colecciones"> Colecciones </h2>
+<section id="quiz-Colecciones" class="practice-panel"></section>
+
+<h2 id="ExcepcionesFicheros"> Excepciones Ficheros </h2>
+<section id="quiz-ExcepcionesFicheros" class="practice-panel"></section>
+
+<!-- NO ENTRA EN EL EXAMEN -->
+ <!-- 
+<h2 id="BBDD"> BBDD </h2>
+<section id="quiz-BBDD" class="practice-panel"></section>
+ -->
+
+</section>
+
+
+</main>
+<!-------------------ARRAYS PREGUNTAS------------------->
+<script>
+    
+// define tus constantes de ejercicios aquí (templatesAbility, templatesPermission...)
+// LENGUAJE DE MARCADO
+
+const html = [
+/* ===================== CONCEPTO GENERAL ===================== */
+{ tpl:"¿Qué es HTML?", correct:"Un lenguaje de marcado para estructurar documentos web", options:["Un lenguaje de programación para servidores","Un lenguaje de marcado para estructurar documentos web","Un sistema operativo orientado a la web","Un software de diseño gráfico digital"], example:"PDF · Introducción a HTML — HTML es un lenguaje de marcado (no de programación) usado para estructurar documentos web." },
+{ tpl:"¿Qué es un editor HTML?", correct:"Una herramienta para crear y modificar código", options:["Un navegador para visualizar páginas","Una herramienta para crear y modificar código","Un servidor para alojar archivos","Un compilador de lenguajes web"], example:"PDF · Introducción — Un editor HTML permite escribir y modificar código fuente." },
+{ tpl:"¿Qué extensión tiene un archivo HTML?", correct:"La extensión .html", options:["La extensión .txt","La extensión .css","La extensión .js","La extensión .html"], example:"PDF · Archivos HTML — Los documentos HTML se guardan con extensión .html o .htm." },
+
+/* ===================== ESTRUCTURA BÁSICA ===================== */
+{ tpl:"¿Para qué sirve la etiqueta <html>?", correct:"Definir el elemento raíz del documento web", options:["Aplicar estilos globales al documento","Definir el elemento raíz del documento web","Insertar scripts de forma directa","Cargar recursos externos del sitio"], example:"PDF · Estructura básica — <html> es el elemento raíz que contiene todo el documento." },
+{ tpl:"¿Qué función cumple la etiqueta <head>?", correct:"Contener información descriptiva del documento", options:["Mostrar contenido visible al usuario","Contener información descriptiva del documento","Definir la estructura visual principal","Incluir texto y elementos multimedia"], example:"PDF · Estructura básica — <head> contiene metadatos, enlaces a CSS y el título." },
+{ tpl:"¿Qué etiqueta define el título de la página?", correct:"<title>", options:["<meta>","<header>","<title>","<head>"], example:"PDF · Cabecera del documento — <title> define el título que aparece en la pestaña del navegador." },
+{ tpl:"¿Dónde se coloca el contenido visible?", correct:"Dentro de la etiqueta <body>", options:["Dentro de la etiqueta <head>","Dentro de la etiqueta <html>","Dentro de la etiqueta <body>","Dentro de la etiqueta <meta>"], example:"PDF · Estructura básica — <body> contiene todo el contenido visible de la página." },
+
+/* ===================== ETIQUETAS Y ATRIBUTOS ===================== */
+{ tpl:"¿Qué son las etiquetas HTML?", correct:"Elementos que definen la estructura del contenido", options:["Comandos de programación avanzada","Elementos que definen la estructura del contenido","Archivos externos de configuración","Funciones internas del navegador"], example:"PDF · Etiquetas HTML — Las etiquetas delimitan y estructuran el contenido." },
+{ tpl:"¿Qué es un atributo HTML?", correct:"Una propiedad adicional de una etiqueta", options:["Un tipo especial de etiqueta","Una propiedad adicional de una etiqueta","Un elemento visual del documento","Un archivo asociado al HTML"], example:"PDF · Atributos — Los atributos añaden información extra a una etiqueta." },
+{ tpl:"¿Qué atributo identifica un elemento de forma única?", correct:"El atributo id", options:["El atributo class","El atributo style","El atributo name","El atributo id"], example:"PDF · Atributos — id identifica de forma única un elemento." },
+{ tpl:"¿Para qué se usa el atributo class?", correct:"Aplicar estilos a varios elementos", options:["Identificar un elemento único","Aplicar estilos a varios elementos","Definir el idioma del texto","Modificar el contenido interno"], example:"PDF · Atributos — class se usa para agrupar elementos y aplicar estilos comunes." },
+{ tpl:"¿Qué indica el atributo lang?", correct:"El idioma principal del documento", options:["El formato del texto","El idioma principal del documento","La codificación de caracteres","El tipo de fuente utilizada"], example:"PDF · Atributos globales — lang indica el idioma del documento HTML." },
+
+/* ===================== ELEMENTOS DE BLOQUE Y LÍNEA ===================== */
+{ tpl:"¿Qué caracteriza a un elemento de bloque?", correct:"Ocupa todo el ancho disponible", options:["Ocupa solo su contenido","No permite atributos","Ocupa todo el ancho disponible","No puede contener otros elementos"], example:"PDF · Tipos de elementos — Los elementos de bloque empiezan en nueva línea." },
+{ tpl:"¿Qué define a un elemento en línea?", correct:"Ocupa solo el espacio necesario", options:["Empieza siempre en nueva línea","Ocupa todo el ancho disponible","Ocupa solo el espacio necesario","No puede contener texto"], example:"PDF · Tipos de elementos — Los elementos en línea no rompen el flujo del texto." },
+
+/* ===================== TEXTO ===================== */
+{ tpl:"¿Qué etiqueta se usa para crear un párrafo?", correct:"La etiqueta <p>", options:["La etiqueta <div>","La etiqueta <span>","La etiqueta <p>","La etiqueta <br>"], example:"PDF · Texto — <p> define un párrafo de texto." },
+{ tpl:"¿Qué etiqueta crea un salto de línea?", correct:"La etiqueta <br>", options:["La etiqueta <p>","La etiqueta <hr>","La etiqueta <br>","La etiqueta <line>"], example:"PDF · Texto — <br> inserta un salto de línea sin nuevo párrafo." },
+{ tpl:"¿Qué etiqueta crea una línea horizontal?", correct:"La etiqueta <hr>", options:["La etiqueta <br>","La etiqueta <line>","La etiqueta <hr>","La etiqueta <p>"], example:"PDF · Texto — <hr> crea un separador horizontal." },
+{ tpl:"¿Qué etiquetas definen encabezados?", correct:"Las etiquetas <h1> a <h6>", options:["Las etiquetas <p>","Las etiquetas <title>","Las etiquetas <header>","Las etiquetas <h1> a <h6>"], example:"PDF · Encabezados — <h1> a <h6> definen títulos jerárquicos." },
+{ tpl:"¿Qué etiqueta aporta énfasis semántico?", correct:"La etiqueta <strong>", options:["La etiqueta <b>","La etiqueta <i>","La etiqueta <strong>","La etiqueta <mark>"], example:"PDF · Texto — <strong> aporta énfasis semántico, no solo visual." },
+
+/* ===================== LISTAS ===================== */
+{ tpl:"¿Qué etiqueta crea una lista desordenada?", correct:"La etiqueta <ul>", options:["La etiqueta <ol>","La etiqueta <ul>","La etiqueta <li>","La etiqueta <dl>"], example:"PDF · Listas — <ul> define listas sin orden numérico." },
+{ tpl:"¿Qué etiqueta crea una lista ordenada?", correct:"La etiqueta <ol>", options:["La etiqueta <ul>","La etiqueta <li>","La etiqueta <ol>","La etiqueta <dl>"], example:"PDF · Listas — <ol> define listas numeradas." },
+{ tpl:"¿Qué etiqueta define un elemento de lista?", correct:"La etiqueta <li>", options:["La etiqueta <ul>","La etiqueta <ol>","La etiqueta <li>","La etiqueta <dt>"], example:"PDF · Listas — <li> representa cada elemento de una lista." },
+
+/* ===================== TABLAS ===================== */
+{ tpl:"¿Qué etiqueta define una tabla?", correct:"La etiqueta <table>", options:["La etiqueta <tr>","La etiqueta <td>","La etiqueta <table>","La etiqueta <th>"], example:"PDF · Tablas — <table> define la estructura de una tabla." },
+{ tpl:"¿Qué etiqueta define una fila de tabla?", correct:"La etiqueta <tr>", options:["La etiqueta <td>","La etiqueta <tr>","La etiqueta <th>","La etiqueta <table>"], example:"PDF · Tablas — <tr> representa una fila." },
+{ tpl:"¿Qué etiqueta define una celda de tabla?", correct:"La etiqueta <td>", options:["La etiqueta <tr>","La etiqueta <th>","La etiqueta <td>","La etiqueta <table>"], example:"PDF · Tablas — <td> define una celda de datos." },
+{ tpl:"¿Qué etiqueta define la cabecera de una tabla?", correct:"La etiqueta <th>", options:["La etiqueta <td>","La etiqueta <tr>","La etiqueta <th>","La etiqueta <caption>"], example:"PDF · Tablas — <th> define celdas de cabecera." },
+
+/* ===================== FORMULARIOS ===================== */
+{ tpl:"¿Qué etiqueta define un formulario?", correct:"La etiqueta <form>", options:["La etiqueta <input>","La etiqueta <form>","La etiqueta <fieldset>","La etiqueta <label>"], example:"PDF · Formularios — <form> agrupa campos para enviar datos." },
+{ tpl:"¿Qué atributo indica el destino de los datos?", correct:"El atributo action", options:["El atributo method","El atributo action","El atributo name","El atributo value"], example:"PDF · Formularios — action indica a dónde se envían los datos." },
+{ tpl:"¿Qué atributo define el método de envío?", correct:"El atributo method", options:["El atributo type","El atributo method","El atributo action","El atributo target"], example:"PDF · Formularios — method indica cómo se envían los datos." },
+{ tpl:"¿Qué etiqueta crea un campo de entrada?", correct:"La etiqueta <input>", options:["La etiqueta <textarea>","La etiqueta <input>","La etiqueta <select>","La etiqueta <label>"], example:"PDF · Formularios — <input> crea campos de entrada." },
+{ tpl:"¿Qué tipo de input oculta el texto?", correct:"El tipo password", options:["El tipo text","El tipo email","El tipo password","El tipo number"], example:"PDF · Formularios — password oculta el texto introducido." },
+
+/* ===================== ENLACES Y MULTIMEDIA ===================== */
+{ tpl:"¿Qué etiqueta se usa para crear enlaces?", correct:"La etiqueta <a>", options:["La etiqueta <link>","La etiqueta <href>","La etiqueta <a>","La etiqueta <nav>"], example:"PDF · Enlaces — <a> crea enlaces usando href." },
+{ tpl:"¿Qué atributo define la URL del enlace?", correct:"El atributo href", options:["El atributo src","El atributo href","El atributo link","El atributo target"], example:"PDF · Enlaces — href indica el destino del enlace." },
+{ tpl:"¿Qué etiqueta inserta una imagen?", correct:"La etiqueta <img>", options:["La etiqueta <image>","La etiqueta <img>","La etiqueta <src>","La etiqueta <picture>"], example:"PDF · Multimedia — <img> inserta imágenes en la página." },
+{ tpl:"¿Qué atributo describe la imagen?", correct:"El atributo alt", options:["El atributo src","El atributo title","El atributo alt","El atributo width"], example:"PDF · Multimedia — alt proporciona texto alternativo (accesibilidad)." },
+{ tpl:"¿Qué etiqueta incrusta otra página web?", correct:"La etiqueta <iframe>", options:["La etiqueta <embed>","La etiqueta <object>","La etiqueta <iframe>","La etiqueta <link>"], example:"PDF · Multimedia — <iframe> incrusta contenido externo." },
+
+/* ===================== HTML SEMÁNTICO ===================== */
+{ tpl:"¿Qué etiqueta define la navegación principal?", correct:"La etiqueta <nav>", options:["La etiqueta <header>","La etiqueta <nav>","La etiqueta <aside>","La etiqueta <footer>"], example:"PDF · HTML semántico — <nav> agrupa enlaces de navegación." },
+{ tpl:"¿Qué etiqueta se usa para agrupar contenido?", correct:"La etiqueta <div>", options:["La etiqueta <span>","La etiqueta <section>","La etiqueta <div>","La etiqueta <p>"], example:"PDF · Contenedores — <div> agrupa contenido sin semántica." },
+{ tpl:"¿Qué etiqueta define una sección relacionada?", correct:"La etiqueta <section>", options:["La etiqueta <article>","La etiqueta <section>","La etiqueta <div>","La etiqueta <aside>"], example:"PDF · HTML semántico — <section> define secciones temáticas." },
+{ tpl:"¿Qué etiqueta representa contenido independiente?", correct:"La etiqueta <article>", options:["La etiqueta <section>","La etiqueta <div>","La etiqueta <article>","La etiqueta <aside>"], example:"PDF · HTML semántico — <article> representa contenido autónomo." },
+
+/* ===================== XHTML ===================== */
+{ tpl:"¿Qué diferencia principal tiene XHTML?", correct:"Es más estricto con la sintaxis", options:["Es más flexible al escribir","No utiliza etiquetas HTML","Es más estricto con la sintaxis","Permite errores sin problemas"], example:"PDF · XHTML — XHTML es una versión más estricta de HTML basada en XML." }
+];
+
+const css = [
+
+/* ===================== INTRODUCCIÓN ===================== */
+{ tpl:"¿Qué es CSS?", correct:"Un mecanismo para aplicar estilos a páginas web", options:["Un lenguaje de programación","Un mecanismo para aplicar estilos a páginas web","Un sistema de bases de datos","Un tipo de navegador"], example:"PDF CSS · Introducción — CSS permite definir la presentación visual de una web." },
+{ tpl:"¿Cuál es el objetivo principal de CSS?", correct:"Separar el contenido de la presentación", options:["Mejorar la velocidad del servidor","Separar el contenido de la presentación","Crear estructura HTML","Gestionar eventos del usuario"], example:"PDF CSS · Introducción — Separación entre estructura (HTML) y estilo (CSS)." },
+
+/* ===================== SINTAXIS ===================== */
+{ tpl:"¿Qué forma una regla CSS?", correct:"Un selector y un conjunto de declaraciones", options:["Una etiqueta HTML","Un selector y un conjunto de declaraciones","Una propiedad y un comentario","Un archivo externo"], example:"PDF CSS · Sintaxis — Regla = selector + propiedades." },
+{ tpl:"¿Qué indica un selector CSS?", correct:"A qué elementos se aplica el estilo", options:["Qué valores se modifican","A qué elementos se aplica el estilo","Dónde se guarda el CSS","El tipo de navegador"], example:"PDF CSS · Sintaxis — El selector determina el elemento afectado." },
+{ tpl:"¿De qué se compone una declaración CSS?", correct:"De una propiedad y un valor", options:["De un selector y un atributo","De una propiedad y un valor","De una etiqueta y un id","De un archivo y una ruta"], example:"PDF CSS · Sintaxis — Declaración: propiedad: valor." },
+
+/* ===================== FORMAS DE APLICAR CSS ===================== */
+{ tpl:"¿Cuál es la forma más recomendada de aplicar CSS?", correct:"Mediante una hoja de estilos externa", options:["CSS en línea","CSS interno","Mediante una hoja de estilos externa","Mediante atributos HTML"], example:"PDF CSS · Aplicación de estilos — CSS externo es la forma habitual." },
+{ tpl:"¿Dónde se enlaza un CSS externo?", correct:"En la cabecera del documento HTML", options:["En el body","En la cabecera del documento HTML","En un script","En el footer"], example:"PDF CSS · Aplicación de estilos — Se enlaza con <link> en <head>." },
+
+/* ===================== UNIDADES Y COLORES ===================== */
+{ tpl:"¿Qué unidad es absoluta en CSS?", correct:"px", options:["%","em","px","vw"], example:"PDF CSS · Unidades — px es una unidad absoluta." },
+{ tpl:"¿Qué unidad depende del tamaño del elemento padre?", correct:"em", options:["px","vw","em","cm"], example:"PDF CSS · Unidades — em depende del tamaño de letra del padre." },
+{ tpl:"¿Qué formato define un color hexadecimal?", correct:"#RRGGBB", options:["rgb()","hsl()","#RRGGBB","color()"], example:"PDF CSS · Colores — Hexadecimal: #RRGGBB." },
+{ tpl:"¿Qué modelo de color usa matiz, saturación y luminosidad?", correct:"HSL", options:["RGB","HEX","HSL","CMYK"], example:"PDF CSS · Colores — hsl(h, s, l)." },
+
+/* ===================== SELECTORES ===================== */
+{ tpl:"¿Qué selector selecciona todos los elementos?", correct:"El selector universal *", options:["El selector de clase","El selector universal *","El selector de id","El selector de tipo"], example:"PDF CSS · Selectores básicos — * selecciona todos." },
+{ tpl:"¿Qué selector usa el símbolo #?", correct:"El selector de identificador", options:["Selector de clase","Selector de atributo","Selector de identificador","Selector universal"], example:"PDF CSS · Selectores — #id." },
+{ tpl:"¿Qué selector usa el símbolo .?", correct:"El selector de clase", options:["Selector de tipo","Selector de clase","Selector de atributo","Selector universal"], example:"PDF CSS · Selectores — .clase." },
+
+/* ===================== PSEUDOCLASES Y PSEUDOELEMENTOS ===================== */
+{ tpl:"¿Qué pseudoclase se activa al pasar el ratón?", correct:":hover", options:[":active",":focus",":hover",":checked"], example:"PDF CSS · Pseudoclases — :hover." },
+{ tpl:"¿Qué pseudoelemento selecciona la primera letra?", correct:"::first-letter", options:["::first-line","::selection","::first-letter","::before"], example:"PDF CSS · Pseudoelementos — ::first-letter." },
+
+/* ===================== MODELO DE CAJAS ===================== */
+{ tpl:"¿Qué propiedad define el margen exterior?", correct:"margin", options:["padding","border","margin","outline"], example:"PDF CSS · Box model — margin." },
+{ tpl:"¿Qué propiedad define el margen interior?", correct:"padding", options:["margin","border","padding","outline"], example:"PDF CSS · Box model — padding." },
+{ tpl:"¿Qué diferencia principal tiene outline respecto a border?", correct:"No ocupa espacio", options:["Siempre es más ancho","No ocupa espacio","Sustituye al margen","No tiene color"], example:"PDF CSS · Box model — outline no ocupa espacio." },
+
+/* ===================== DISPLAY ===================== */
+{ tpl:"¿Qué valor display convierte un elemento en bloque?", correct:"block", options:["inline","block","inline-block","none"], example:"PDF CSS · Display — block." },
+{ tpl:"¿Qué valor display permite respetar ancho y alto en línea?", correct:"inline-block", options:["inline","block","inline-block","flex"], example:"PDF CSS · Display — inline-block." },
+
+/* ===================== FLEXBOX ===================== */
+{ tpl:"¿Qué modelo organiza el contenido en una dimensión?", correct:"Flexbox", options:["Grid","Flexbox","Float","Position"], example:"PDF CSS · Flexbox — Diseño en una dimensión." },
+{ tpl:"¿Qué propiedad define el eje principal en flex?", correct:"flex-direction", options:["justify-content","align-items","flex-direction","flex-wrap"], example:"PDF CSS · Flexbox — flex-direction." },
+{ tpl:"¿Qué propiedad alinea en el eje principal?", correct:"justify-content", options:["align-items","justify-content","flex-grow","flex-wrap"], example:"PDF CSS · Flexbox — justify-content." },
+
+/* ===================== GRID ===================== */
+{ tpl:"¿Qué modelo organiza el contenido en dos dimensiones?", correct:"Grid", options:["Flex","Grid","Float","Inline"], example:"PDF CSS · Grid — Diseño en dos dimensiones." },
+{ tpl:"¿Qué unidad fr reparte el espacio disponible?", correct:"fr", options:["px","%","fr","em"], example:"PDF CSS · Grid — fr reparte el espacio." },
+
+/* ===================== FLOAT ===================== */
+{ tpl:"¿Qué propiedad mueve un elemento a la izquierda?", correct:"float: left", options:["clear: left","float: left","position: left","align: left"], example:"PDF CSS · Float — float:left." },
+{ tpl:"¿Qué propiedad evita elementos flotantes?", correct:"clear", options:["float","display","clear","overflow"], example:"PDF CSS · Float — clear." },
+
+/* ===================== POSITION ===================== */
+{ tpl:"¿Qué valor position es el valor por defecto?", correct:"static", options:["relative","absolute","static","fixed"], example:"PDF CSS · Position — static." },
+{ tpl:"¿Qué position fija el elemento a la ventana?", correct:"fixed", options:["absolute","relative","sticky","fixed"], example:"PDF CSS · Position — fixed." },
+{ tpl:"¿Qué propiedad controla el orden de apilamiento?", correct:"z-index", options:["overflow","z-index","position","opacity"], example:"PDF CSS · Position — z-index." },
+
+/* ===================== MEDIA QUERIES ===================== */
+{ tpl:"¿Para qué sirven las media queries?", correct:"Adaptar estilos según el dispositivo", options:["Modificar HTML","Adaptar estilos según el dispositivo","Cambiar el DOM","Optimizar bases de datos"], example:"PDF CSS · Media queries — Diseño responsive." },
+{ tpl:"¿Qué mediafeature evalúa el ancho de la pantalla?", correct:"width", options:["height","width","orientation","display"], example:"PDF CSS · Media queries — width." }
+
+];
+
+const lm = [
+/* ===================== CONCEPTO GENERAL · LENGUAJES DE MARCAS ===================== */
+{ tpl:"¿Qué es un lenguaje de marcas?", correct:"Un modo de codificar información mediante etiquetas", options:["Un lenguaje de programación orientado a objetos","Un modo de codificar información mediante etiquetas","Un sistema operativo para documentos","Un compilador de texto"], example:"Es correcta porque el PDF define los lenguajes de marcas como un modo de codificar información usando etiquetas que aportan información adicional al texto. Referencia: apartado 1 · pág. 3." },
+{ tpl:"¿Qué función principal tienen las etiquetas?", correct:"Definir la estructura o significado del contenido", options:["Ejecutar código","Definir la estructura o significado del contenido","Almacenar datos en memoria","Compilar documentos"], example:"Las etiquetas sirven para definir estructura, formato o significado semántico del contenido, no para ejecutar código. Referencia: funciones de las etiquetas · pág. 3." },
+{ tpl:"¿En qué tipo de archivo se almacenan los lenguajes de marcas?", correct:"En texto plano", options:["En binario","En texto plano","En bases de datos","En archivos ejecutables"], example:"El PDF indica explícitamente que los lenguajes de marcas se almacenan en texto plano, lo que permite independencia y portabilidad. Referencia: características fundamentales · pág. 5." },
+{ tpl:"¿Qué característica permite usar un lenguaje de marcas en distintas plataformas?", correct:"La independencia", options:["La portabilidad del hardware","La independencia","La velocidad de ejecución","La compilación previa"], example:"La independencia permite que los documentos se utilicen en distintas plataformas sin depender del sistema. Referencia: características fundamentales · pág. 5." },
+{ tpl:"¿Qué característica facilita el tratamiento automático de documentos?", correct:"Facilidad de procesamiento", options:["Flexibilidad visual","Compatibilidad gráfica","Facilidad de procesamiento","Diseño adaptable"], example:"Los lenguajes de marcas facilitan el procesamiento automático gracias a su estructura clara basada en etiquetas. Referencia: características fundamentales · pág. 5." },
+
+/* ===================== TIPOS DE LENGUAJES DE MARCAS ===================== */
+{ tpl:"¿Qué tipo de lenguaje de marcas define cómo se visualiza la información?", correct:"Lenguaje de presentación", options:["Lenguaje semántico","Lenguaje descriptivo","Lenguaje de presentación","Lenguaje procedural"], example:"Los lenguajes de presentación se centran en el formato visual del documento. Referencia: clasificación de lenguajes · pág. 3." },
+{ tpl:"¿Qué tipo de lenguaje de marcas define la estructura pero no la visualización?", correct:"Lenguaje descriptivo o semántico", options:["Lenguaje de presentación","Lenguaje descriptivo o semántico","Lenguaje compilado","Lenguaje interpretado"], example:"Los lenguajes descriptivos definen la estructura y significado del contenido, no su apariencia. Referencia: clasificación de lenguajes · pág. 3." },
+
+/* ===================== EVOLUCIÓN HISTÓRICA ===================== */
+{ tpl:"¿Qué lenguaje surgió en los años 70 para estructurar documentos?", correct:"GML", options:["HTML","XML","GML","JSON"], example:"El PDF indica que los lenguajes de marcas surgieron en los años 70 y el primero fue GML. Referencia: evolución histórica · pág. 7 y 9." },
+{ tpl:"¿Quién creó GML?", correct:"Charles F. Goldfarb", options:["Tim Berners-Lee","Charles F. Goldfarb","Dennis Ritchie","Alan Turing"], example:"IBM encargó a Charles F. Goldfarb la creación de GML para gestionar documentos. Referencia: GML · pág. 9." },
+{ tpl:"¿Cuál era el objetivo principal de GML?", correct:"Describir documentos independientemente de la plataforma", options:["Diseñar páginas web","Describir documentos independientemente de la plataforma","Crear lenguajes visuales","Ejecutar scripts"], example:"GML buscaba describir documentos sin depender de la plataforma o aplicación. Referencia: GML · pág. 9." },
+{ tpl:"¿Qué estándar ISO evolucionó a partir de GML?", correct:"SGML", options:["HTML","XML","SGML","XHTML"], example:"SGML es la evolución de GML y fue estandarizado por ISO. Referencia: SGML · pág. 11." },
+{ tpl:"¿Por qué SGML no se popularizó ampliamente?", correct:"Por su complejidad", options:["Por ser obsoleto","Por su complejidad","Por falta de navegadores","Por no usar etiquetas"], example:"El PDF indica que SGML solo se usó en grandes aplicaciones industriales debido a su complejidad. Referencia: SGML · pág. 11." },
+{ tpl:"¿Qué lenguaje creó Tim Berners-Lee?", correct:"HTML", options:["XML","SGML","HTML","JSON"], example:"Tim Berners-Lee creó HTML para gestionar información en la Web. Referencia: HTML · pág. 12." },
+{ tpl:"¿Qué organización fundó Tim Berners-Lee?", correct:"W3C", options:["ISO","IEEE","W3C","IETF"], example:"El W3C fue creado por Tim Berners-Lee para estandarizar tecnologías web. Referencia: HTML · pág. 12." },
+{ tpl:"¿Qué dos estándares combina HTML?", correct:"ASCII y SGML", options:["XML y JSON","ASCII y SGML","Unicode y XML","HTTP y TCP"], example:"HTML combina ASCII para el texto y SGML como base estructural. Referencia: HTML · pág. 12." },
+{ tpl:"¿Cuál es la función principal de HTML?", correct:"Estructurar documentos web", options:["Procesar datos","Estructurar documentos web","Definir estilos","Ejecutar lógica"], example:"HTML se utiliza para estructurar y documentar páginas web. Referencia: HTML · pág. 12." },
+
+/* ===================== XML Y JSON ===================== */
+{ tpl:"¿Qué lenguaje apareció en 1998 como estándar estructural?", correct:"XML", options:["HTML","SGML","XML","JSON"], example:"XML se establece en 1998 como estándar estructural sin información de diseño. Referencia: XML · pág. 13." },
+{ tpl:"¿Qué tipo de lenguaje es XML?", correct:"Un metalenguaje", options:["Un lenguaje compilado","Un metalenguaje","Un lenguaje visual","Un framework"], example:"XML es un metalenguaje porque permite definir otros lenguajes. Referencia: XML · pág. 13." },
+{ tpl:"¿Qué permite XML respecto a las etiquetas?", correct:"Definir etiquetas propias", options:["Usar solo etiquetas predefinidas","Definir etiquetas propias","Eliminar atributos","Usar solo HTML"], example:"Una de las características clave de XML es permitir definir etiquetas propias. Referencia: XML · pág. 13." },
+{ tpl:"¿Qué separa XML de forma clara?", correct:"Estructura y diseño", options:["Datos y memoria","Código y compilación","Estructura y diseño","Cliente y servidor"], example:"XML separa completamente la estructura de los datos del diseño visual. Referencia: XML · pág. 13." },
+{ tpl:"¿Qué estándar es una alternativa ligera a XML?", correct:"JSON", options:["HTML","SGML","JSON","XHTML"], example:"JSON se presenta como alternativa a XML para intercambio de datos. Referencia: JSON · pág. 14." },
+{ tpl:"¿Qué ventaja principal tiene JSON frente a XML?", correct:"Es más ligero y sencillo", options:["Es más estricto","Es más visual","Es más ligero y sencillo","Tiene más herramientas"], example:"El PDF indica que JSON es más ligero y sencillo que XML. Referencia: JSON · pág. 14." },
+{ tpl:"¿Qué desventaja tiene JSON respecto a XML?", correct:"Tiene menos herramientas asociadas", options:["No es compatible","Tiene menos herramientas asociadas","No es estándar","No usa texto plano"], example:"JSON carece de algunas herramientas que sí existen en XML. Referencia: JSON · pág. 14." },
+
+/* ===================== COMPARACIONES Y REGLAS ===================== */
+{ tpl:"¿Qué exige XML pero no HTML?", correct:"Documentos bien formados", options:["Etiquetas opcionales","Documentos bien formados","Diseño visual","Compatibilidad con navegadores"], example:"XML exige documentos bien formados, a diferencia de HTML. Referencia: comparación XML–HTML · pág. 15." },
+{ tpl:"¿Qué característica tiene HTML respecto a las etiquetas?", correct:"Usa un conjunto limitado de etiquetas", options:["Permite etiquetas propias","Usa un conjunto limitado de etiquetas","Es un metalenguaje","No tiene estructura"], example:"HTML aplica un conjunto limitado de etiquetas sobre un único tipo de documento. Referencia: comparación XML–HTML · pág. 15." },
+{ tpl:"¿Qué lenguaje requiere validación estricta?", correct:"SGML", options:["HTML","XML","SGML","JSON"], example:"SGML requiere documentos validados obligatoriamente. Referencia: comparación XML–SGML · pág. 16." },
+{ tpl:"¿Qué significa que un documento esté bien formado?", correct:"Que cumple las reglas sintácticas del lenguaje", options:["Que está validado por un navegador","Que cumple las reglas sintácticas del lenguaje","Que tiene diseño","Que usa CSS"], example:"Un documento bien formado cumple las reglas sintácticas sin necesidad de validación. Referencia: XML vs SGML · pág. 16." },
+
+/* ===================== ETIQUETAS ===================== */
+{ tpl:"¿Qué elemento define el inicio y fin de una etiqueta?", correct:"Etiquetas de apertura y cierre", options:["Atributos","Comentarios","Etiquetas de apertura y cierre","Namespaces"], example:"Las etiquetas constan de una apertura y un cierre que delimitan el contenido afectado. Referencia: etiquetas · pág. 18." },
+{ tpl:"¿Quién interpreta las etiquetas de un documento?", correct:"El intérprete o compilador", options:["El usuario","El sistema operativo","El intérprete o compilador","El servidor web"], example:"El documento es procesado por un intérprete o compilador que interpreta las etiquetas. Referencia: etiquetas · pág. 18." },
+
+/* ===================== XML · ESTRUCTURA Y SINTAXIS ===================== */
+{ tpl:"¿De qué partes se compone un documento XML?", correct:"Prólogo y ejemplar", options:["Encabezado y cuerpo","Prólogo y ejemplar","DTD y etiquetas","Raíz y atributos"], example:"El PDF indica que XML se compone de un prólogo y un ejemplar. Referencia: estructura XML · pág. 13." },
+{ tpl:"¿Qué información contiene el prólogo XML?", correct:"Información sobre versión y codificación", options:["Los datos principales","Las etiquetas del documento","Información sobre versión y codificación","Los espacios de nombres"], example:"El prólogo contiene información como la versión y la codificación del documento. Referencia: prólogo XML · pág. 13." },
+{ tpl:"¿Qué indica normalmente el prólogo de un XML?", correct:"La versión de XML utilizada", options:["El lenguaje de programación","La versión de XML utilizada","El navegador","El esquema visual"], example:"El prólogo suele indicar la versión de XML usada. Referencia: prólogo XML · pág. 13." },
+{ tpl:"¿Qué es el ejemplar de un documento XML?", correct:"El contenido principal estructurado mediante etiquetas", options:["El prólogo","El esquema XML","El contenido principal estructurado mediante etiquetas","El validador"], example:"El ejemplar contiene los datos estructurados del documento. Referencia: estructura XML · pág. 13." },
+{ tpl:"¿Qué elemento debe tener todo documento XML?", correct:"Un único elemento raíz", options:["Varias raíces","Un único elemento raíz","Un encabezado HTML","Un comentario inicial"], example:"Todo documento XML debe tener un único elemento raíz. Referencia: estructura XML · pág. 13." },
+
+/* ===================== XML · DOCUMENTOS BIEN FORMADOS ===================== */
+{ tpl:"¿Qué regla es obligatoria para que un XML esté bien formado?", correct:"Las etiquetas deben cerrarse correctamente", options:["Usar solo minúsculas","Las etiquetas deben cerrarse correctamente","Tener DTD","Usar atributos"], example:"Las etiquetas deben cerrarse correctamente para que el XML sea válido sintácticamente. Referencia: documentos bien formados · pág. 16." },
+{ tpl:"¿Qué ocurre si una etiqueta no se cierra en XML?", correct:"El documento no está bien formado", options:["El navegador la corrige","El documento no está bien formado","Se ignora la etiqueta","Se valida automáticamente"], example:"Una etiqueta sin cerrar rompe las reglas de un documento bien formado. Referencia: documentos bien formados · pág. 16." },
+{ tpl:"¿Cómo deben anidarse las etiquetas en XML?", correct:"Correctamente y sin solaparse", options:["Libremente","Correctamente y sin solaparse","Solo con atributos","De forma visual"], example:"El anidamiento incorrecto provoca errores de sintaxis. Referencia: documentos bien formados · pág. 16." },
+{ tpl:"¿Puede un documento XML estar bien formado y no validado?", correct:"Sí, no es obligatorio validar", options:["No, siempre debe validarse","Sí, no es obligatorio validar","Solo en HTML","Solo en SGML"], example:"XML permite documentos bien formados sin necesidad de validación. Referencia: comparación XML–SGML · pág. 16." },
+
+/* ===================== XML · NAMESPACES ===================== */
+{ tpl:"¿Para qué sirven los espacios de nombres en XML?", correct:"Evitar conflictos entre etiquetas", options:["Dar estilo al documento","Evitar conflictos entre etiquetas","Validar documentos","Reducir tamaño"], example:"Los namespaces evitan conflictos entre etiquetas con el mismo nombre. Referencia: espacios de nombres · pág. 17." },
+{ tpl:"¿Qué problema resuelven los namespaces?", correct:"Etiquetas con el mismo nombre y distinto significado", options:["Errores de sintaxis","Problemas de visualización","Etiquetas con el mismo nombre y distinto significado","Falta de atributos"], example:"Permiten distinguir etiquetas iguales con significados distintos. Referencia: espacios de nombres · pág. 17." },
+{ tpl:"¿Dónde se definen normalmente los espacios de nombres?", correct:"En el elemento raíz", options:["En el prólogo","En cada etiqueta","En el elemento raíz","En comentarios"], example:"Normalmente se declaran en el elemento raíz del documento XML. Referencia: espacios de nombres · pág. 17." },
+
+/* ===================== DTD ===================== */
+{ tpl:"¿Qué es un DTD?", correct:"Una definición del tipo de documento", options:["Un lenguaje de estilos","Una definición del tipo de documento","Un editor XML","Un navegador"], example:"DTD significa Document Type Definition y define la estructura del documento. Referencia: definición DTD · pág. 3 y 18." },
+{ tpl:"¿Para qué se usa un DTD?", correct:"Definir la estructura permitida de un documento", options:["Aplicar estilos","Definir la estructura permitida de un documento","Crear etiquetas visuales","Interpretar XML"], example:"DTD se usa para definir qué estructura y etiquetas son válidas. Referencia: DTD · pág. 3." },
+
+/* ===================== HERRAMIENTAS DE EDICIÓN ===================== */
+{ tpl:"¿Qué tipo de herramienta permite editar documentos manualmente?", correct:"Editores", options:["Procesadores","Editores","Compiladores","Validadores"], example:"Los editores permiten editar directamente el código del documento. Referencia: herramientas de edición · pág. 19." },
+{ tpl:"¿Qué diferencia principal hay entre editores y procesadores?", correct:"El control directo del código", options:["La velocidad","El control directo del código","El diseño visual","La compatibilidad"], example:"Los editores ofrecen control directo del código, a diferencia de los procesadores. Referencia: herramientas de edición · pág. 19." },
+
+/* ===================== CLASIFICACIÓN POR ÁMBITO ===================== */
+{ tpl:"¿Qué lenguaje se usa para documentación electrónica e intercambio de datos?", correct:"XML", options:["HTML","XML","CSS","HTTP"], example:"XML se usa para documentación electrónica e intercambio de datos. Referencia: ámbitos de aplicación · pág. 6." },
+{ tpl:"¿Qué lenguaje se usa en tecnologías de Internet?", correct:"HTML", options:["XML","HTML","MathML","SVG"], example:"HTML se utiliza en tecnologías de Internet y navegación web. Referencia: ámbitos de aplicación · pág. 6." },
+{ tpl:"¿Qué tienen en común muchos lenguajes especializados?", correct:"Son dialectos de XML", options:["Usan HTML","Son lenguajes compilados","Son dialectos de XML","Son propietarios"], example:"El PDF indica que muchos lenguajes especializados son dialectos de XML. Referencia: lenguajes especializados · pág. 6." },
+{ tpl:"¿Qué lenguaje se usa para gráficos vectoriales?", correct:"SVG", options:["HTML","MathML","SVG","JSON"], example:"SVG se utiliza para gráficos vectoriales escalables. Referencia: lenguajes especializados · pág. 6." },
+{ tpl:"¿Qué lenguaje se usa para describir fórmulas matemáticas?", correct:"MathML", options:["XML","HTML","MathML","CSS"], example:"MathML se usa para representar fórmulas matemáticas. Referencia: lenguajes especializados · pág. 6." }
+];
+
+const xml = [
+
+/* ===================== CONCEPTO GENERAL XML ===================== */
+{ tpl:"¿Qué representa XML?", correct:"La estructura de los datos, no los datos en sí", options:["Los datos finales","La estructura de los datos, no los datos en sí","El diseño visual","La lógica de negocio"], example:"Porque XML organiza la información pero no la interpreta ni la muestra. PDF XML · pág. 1" },
+{ tpl:"¿Con qué protocolos es compatible XML?", correct:"HTTP y URL", options:["FTP y SMTP","HTTP y URL","TCP y UDP","JSON y REST"], example:"Porque XML puede transportarse mediante protocolos web estándar. PDF XML · pág. 1" },
+{ tpl:"¿Qué estándar cumple XML si respeta sus normas?", correct:"SGML", options:["HTML","JSON","SGML","XHTML"], example:"Porque XML es un subconjunto simplificado de SGML. PDF XML · pág. 1" },
+{ tpl:"¿Qué nivel de conocimientos requiere XML?", correct:"No requiere grandes conocimientos de programación", options:["Programación avanzada","No requiere grandes conocimientos de programación","Conocimientos de compiladores","Programación orientada a objetos"], example:"Porque XML es declarativo y legible. PDF XML · pág. 1" },
+{ tpl:"¿Qué característica facilita la lectura de XML?", correct:"Es legible para humanos", options:["Es binario","Es legible para humanos","Es compilado","Es ofuscado"], example:"Porque usa texto plano con etiquetas descriptivas. PDF XML · pág. 1" },
+{ tpl:"¿Qué característica permite adaptar XML a nuevos usos?", correct:"Es extensible", options:["Es rígido","Es extensible","Es cerrado","Es visual"], example:"Porque permite definir etiquetas propias. PDF XML · pág. 1" },
+
+/* ===================== CREACIÓN DE DOCUMENTOS XML ===================== */
+{ tpl:"¿Cuál es el primer paso para crear un documento XML?", correct:"Especificación de requisitos", options:["Diseño de etiquetas","Marcado del documento","Especificación de requisitos","Validación"], example:"Porque primero se decide qué información se va a representar. PDF XML · pág. 1" },
+{ tpl:"¿En qué consiste el diseño de etiquetas?", correct:"Definir los nombres de las etiquetas", options:["Escribir los datos","Definir los nombres de las etiquetas","Validar el XML","Crear atributos"], example:"Porque las etiquetas representan la estructura. PDF XML · pág. 1" },
+{ tpl:"¿Qué es el marcado del documento?", correct:"La inclusión de etiquetas para estructurar los datos", options:["El diseño visual","La inclusión de etiquetas para estructurar los datos","La validación","La compilación"], example:"Porque las etiquetas organizan la información. PDF XML · pág. 1" },
+{ tpl:"¿Cómo se denominan los datos que no son etiquetas?", correct:"Datos carácter", options:["Metadatos","Datos binarios","Datos carácter","Atributos"], example:"Porque son el contenido textual entre etiquetas. PDF XML · pág. 1" },
+
+/* ===================== ESTRUCTURA XML ===================== */
+{ tpl:"¿De qué partes se compone un documento XML?", correct:"Prólogo y ejemplar", options:["Encabezado y cuerpo","Prólogo y ejemplar","DTD y etiquetas","Raíz y atributos"], example:"Porque todo XML se divide en declaración y contenido. PDF XML · pág. 1" },
+{ tpl:"¿Qué indica la declaración XML?", correct:"La versión y codificación", options:["El contenido","La versión y codificación","El diseño","Los atributos"], example:"Porque define cómo debe interpretarse el documento. PDF XML · pág. 2" },
+{ tpl:"¿Qué codificaciones admite XML?", correct:"UTF-8 e ISO-8859-1", options:["ASCII","UTF-8 e ISO-8859-1","BIN","UNICODE sin tildes"], example:"Porque ambas soportan caracteres como ñ o tildes. PDF XML · pág. 2" },
+{ tpl:"¿Qué indica el atributo standalone?", correct:"Si necesita un DTD externo", options:["La versión","El idioma","Si necesita un DTD externo","El navegador"], example:"Porque especifica si depende de otro documento. PDF XML · pág. 2" },
+{ tpl:"¿Qué debe coincidir si se usa DOCTYPE?", correct:"El nombre con el elemento raíz", options:["El encoding","El nombre con el elemento raíz","El atributo","El prefijo"], example:"Porque DOCTYPE referencia al elemento principal. PDF XML · pág. 2" },
+
+/* ===================== EJEMPLAR Y ELEMENTOS ===================== */
+{ tpl:"¿Qué contiene el ejemplar?", correct:"Los datos reales del documento", options:["La codificación","Los datos reales del documento","Los comentarios","El DTD"], example:"Porque es la parte útil del XML. PDF XML · pág. 3" },
+{ tpl:"¿Cuántos elementos raíz puede tener un XML?", correct:"Uno solo", options:["Varios","Uno solo","Ninguno","Dos"], example:"Porque XML exige un único elemento raíz. PDF XML · pág. 3" },
+{ tpl:"¿Cómo se puede escribir un elemento vacío?", correct:"Con etiqueta autocerrada", options:["Sin cerrar","Con etiqueta autocerrada","Con comentario","Con CDATA"], example:"Porque <e/> equivale a <e></e>. PDF XML · pág. 3" },
+{ tpl:"¿Qué regla deben cumplir las etiquetas anidadas?", correct:"No solaparse", options:["Ser opcionales","No solaparse","Tener atributos","Usar mayúsculas"], example:"Porque el anidamiento debe ser jerárquico. PDF XML · pág. 3" },
+{ tpl:"¿Son sensibles a mayúsculas las etiquetas XML?", correct:"Sí", options:["No","Sí","Solo en atributos","Solo en HTML"], example:"Porque XML distingue mayúsculas y minúsculas. PDF XML · pág. 3" },
+
+/* ===================== CARACTERES ESPECIALES Y ENTIDADES ===================== */
+{ tpl:"¿Por qué no se pueden usar ciertos caracteres directamente?", correct:"Porque tienen significado especial en XML", options:["Por compatibilidad","Porque tienen significado especial en XML","Por diseño","Por seguridad"], example:"Porque romperían la sintaxis del documento. PDF XML · pág. 3" },
+{ tpl:"¿Cómo se representa el carácter < en XML?", correct:"&lt;", options:["<","&lt;","&#60","&amp;"], example:"Porque < se interpreta como inicio de etiqueta. PDF XML · pág. 4" },
+{ tpl:"¿Qué son las entidades?", correct:"Códigos para representar caracteres especiales", options:["Etiquetas","Atributos","Códigos para representar caracteres especiales","Namespaces"], example:"Porque permiten incluir caracteres reservados. PDF XML · pág. 4" },
+{ tpl:"¿Cómo se escribe el símbolo € en XML?", correct:"&#8364 o &#x20AC", options:["€","&euro;","&#8364 o &#x20AC","&amp;8364"], example:"Porque se usan códigos ASCII decimales o hexadecimales. PDF XML · pág. 4" },
+
+/* ===================== COMENTARIOS Y CDATA ===================== */
+{ tpl:"¿Cómo se escriben los comentarios en XML?", correct:"<!-- comentario -->", options:["// comentario","/* comentario */","<!-- comentario -->","# comentario"], example:"Porque XML usa sintaxis propia para comentarios. PDF XML · pág. 4" },
+{ tpl:"¿Qué es una sección CDATA?", correct:"Una sección no interpretada por XML", options:["Un comentario","Una etiqueta","Una sección no interpretada por XML","Un atributo"], example:"Porque permite incluir código sin validación. PDF XML · pág. 4" },
+{ tpl:"¿Para qué se usa CDATA normalmente?", correct:"Incluir código como HTML o JavaScript", options:["Texto plano","Datos numéricos","Incluir código como HTML o JavaScript","Atributos"], example:"Porque evita errores de sintaxis. PDF XML · pág. 4" },
+
+/* ===================== RELACIÓN PADRE–HIJO ===================== */
+{ tpl:"¿Qué relación existe entre elementos anidados?", correct:"Padre, hijo y hermanos", options:["Cliente-servidor","Padre, hijo y hermanos","Raíz-hoja","Primario-secundario"], example:"Porque XML es jerárquico. PDF XML · pág. 5" },
+{ tpl:"¿Qué es el contenido mixto?", correct:"Texto y elementos combinados", options:["Solo texto","Solo etiquetas","Texto y elementos combinados","Solo atributos"], example:"Porque un elemento puede contener ambos. PDF XML · pág. 5" },
+
+/* ===================== ATRIBUTOS ===================== */
+{ tpl:"¿Para qué sirven los atributos?", correct:"Añadir propiedades a los elementos", options:["Crear estructura","Añadir propiedades a los elementos","Definir jerarquía","Cerrar etiquetas"], example:"Porque complementan la información del elemento. PDF XML · pág. 6" },
+{ tpl:"¿Dónde se definen los atributos?", correct:"En la etiqueta de inicio", options:["En el cierre","En la etiqueta de inicio","En CDATA","En comentarios"], example:"Porque forman parte del inicio del elemento. PDF XML · pág. 6" },
+{ tpl:"¿Pueden los atributos contener otros elementos?", correct:"No", options:["Sí","No","Solo texto","Solo CDATA"], example:"Porque no tienen estructura interna. PDF XML · pág. 6" },
+{ tpl:"¿Cómo deben escribirse los valores de los atributos?", correct:"Entre comillas", options:["Sin comillas","Entre comillas","En mayúsculas","En números"], example:"Porque es obligatorio por la sintaxis XML. PDF XML · pág. 6" },
+
+/* ===================== DOCUMENTOS BIEN FORMADOS ===================== */
+{ tpl:"¿Qué es un documento XML bien formado?", correct:"El que cumple las reglas sintácticas", options:["El que tiene diseño","El que cumple las reglas sintácticas","El que tiene DTD","El que usa namespaces"], example:"Porque debe seguir las normas del W3C. PDF XML · pág. 7" },
+{ tpl:"¿Es obligatorio el prólogo para estar bien formado?", correct:"Sí", options:["No","Sí","Solo en HTML","Solo con DTD"], example:"Porque la declaración XML es obligatoria. PDF XML · pág. 7" },
+{ tpl:"¿Qué número de elementos raíz admite XML?", correct:"Uno", options:["Cero","Uno","Dos","Ilimitados"], example:"Porque un documento solo puede tener una raíz. PDF XML · pág. 7" },
+
+/* ===================== ESPACIOS DE NOMBRES ===================== */
+{ tpl:"¿Para qué sirven los namespaces?", correct:"Evitar conflictos entre nombres de etiquetas", options:["Dar estilo","Evitar conflictos entre nombres de etiquetas","Validar XML","Reducir tamaño"], example:"Porque diferentes documentos pueden usar los mismos nombres. PDF XML · pág. 8" },
+{ tpl:"¿Cómo se llaman los nombres con prefijo?", correct:"Nombres cualificados", options:["Atributos","Etiquetas raíz","Nombres cualificados","URIs"], example:"Porque incluyen el prefijo del namespace. PDF XML · pág. 8" },
+{ tpl:"¿Dónde se define un namespace normalmente?", correct:"En el elemento raíz", options:["En CDATA","En el elemento raíz","En comentarios","En atributos finales"], example:"Porque afecta a todo el documento. PDF XML · pág. 8" },
+{ tpl:"¿Qué atributo se usa para definir un namespace?", correct:"xmlns", options:["id","class","xmlns","href"], example:"Porque es el atributo estándar de XML. PDF XML · pág. 8" },
+{ tpl:"¿Debe el URI de un namespace ser una web real?", correct:"No", options:["Sí","No","Solo HTTPS","Solo locales"], example:"Porque solo identifica un espacio de nombres. PDF XML · pág. 8" }
+
+];
+
+
+// JAVA
+const programacionEstructurada = [
+{tpl:"¿Cuál es la forma correcta de declarar una variable entera en Java?",correct:"int numero;",options:["integer numero;","int numero;","num int;","entero numero;"],example:"En Java las variables se declaran indicando primero el tipo de dato y después el nombre de la variable<br>· PDF Tema 1 · pág. 7"},
+{tpl:"¿Cuál es la forma correcta de declarar una constante?",correct:"final int EDAD = 18;",options:["const int EDAD = 18;","final int EDAD = 18;","int final EDAD = 18;","static int EDAD = 18;"],example:"Las constantes se declaran con final para impedir que su valor cambie tras la inicialización<br>· PDF Tema 1 · pág. 7"},
+{tpl:"¿Qué tipo de dato almacena valores true o false?",correct:"boolean",options:["bool","boolean","logic","binary"],example:"boolean es el tipo primitivo lógico y solo admite true o false<br>· PDF Tema 1 · pág. 2"},
+{tpl:"¿Qué operador se usa para asignar un valor?",correct:"=",options:["==","=",":=","=>"],example:"El operador = asigna el valor de la derecha a la variable de la izquierda<br>· PDF Tema 1 · pág. 10"},
+{tpl:"¿Qué operador compara igualdad de valores?",correct:"==",options:["=","==","!=","<="],example:"== compara si dos valores son iguales, no asigna valores<br>· PDF Tema 1 · pág. 11"},
+{tpl:"¿Qué operador lógico representa AND?",correct:"&&",options:["&","&&","||","!"],example:"&& devuelve true solo si ambas condiciones son verdaderas y evalúa con cortocircuito<br>· PDF Tema 1 · pág. 11"},
+{tpl:"¿Qué estructura se usa para una condición simple?",correct:"if",options:["switch","for","if","while"],example:"if permite ejecutar un bloque de código solo si la condición es verdadera<br>· PDF Tema 1 · pág. 12"},
+{tpl:"¿Cuál es la sintaxis correcta de un if?",correct:"if(condicion){ }",options:["if condicion then","if(condicion){ }","if{condicion}","if[condicion]"],example:"La condición del if va entre paréntesis y el código entre llaves<br>· PDF Tema 1 · pág. 12"},
+{tpl:"¿Qué estructura se usa cuando hay varias opciones según un valor?",correct:"switch",options:["if","while","switch","for"],example:"switch evalúa una expresión y ejecuta el case correspondiente<br>· PDF Tema 1 · pág. 13"},
+{tpl:"¿Qué palabra finaliza un caso en switch?",correct:"break",options:["stop","exit","break","return"],example:"break evita que se ejecuten los casos siguientes del switch<br>· PDF Tema 1 · pág. 13"},
+{tpl:"¿Qué bucle se ejecuta mientras la condición sea verdadera?",correct:"while",options:["for","do-while","while","if"],example:"while comprueba la condición antes de cada iteración del bucle<br>· PDF Tema 1 · pág. 14"},
+{tpl:"¿Qué bucle se ejecuta al menos una vez?",correct:"do-while",options:["while","for","do-while","switch"],example:"do-while ejecuta el bloque una vez antes de comprobar la condición<br>· PDF Tema 1 · pág. 14"},
+{tpl:"¿Cuál es la estructura correcta de un for?",correct:"for(inicio;condicion;incremento)",options:["for(condicion)","for(inicio;condicion;incremento)","for(inicio,fin)","foreach"],example:"for agrupa inicialización, condición e incremento en una sola línea<br>· PDF Tema 1 · pág. 15"},
+{tpl:"¿Qué instrucción interrumpe un bucle?",correct:"break",options:["continue","stop","break","exit"],example:"break finaliza inmediatamente la ejecución del bucle actual<br>· PDF Tema 1 · pág. 15"},
+{tpl:"¿Qué instrucción salta a la siguiente iteración?",correct:"continue",options:["break","return","continue","next"],example:"continue omite el resto del bucle y pasa a la siguiente iteración<br>· PDF Tema 1 · pág. 15"},
+{tpl:"¿Cómo se imprime texto por consola?",correct:"System.out.println()",options:["System.in.println()","print()","System.out.println()","console.log()"],example:"System.out.println muestra el texto y añade un salto de línea al final<br>· PDF Tema 1 · pág. 1 · VIDEO min 00:12:30"},
+{tpl:"¿Qué método imprime sin salto de línea?",correct:"System.out.print()",options:["println()","print()","System.out.print()","System.write()"],example:"System.out.print muestra el texto sin añadir salto de línea<br>· PDF Tema 1 · pág. 1"},
+{tpl:"¿Qué tipo de dato almacena un solo carácter?",correct:"char",options:["String","char","character","byte"],example:"char almacena un único carácter entre comillas simples<br>· PDF Tema 1 · pág. 6"},
+{tpl:"¿Cómo se define un comentario de una línea?",correct:"// comentario",options:["/* comentario */","<!-- comentario -->","// comentario","# comentario"],example:"Los comentarios de una línea empiezan con //<br>· PDF Tema 1 · pág. 1"},
+{tpl:"¿Cómo se define un comentario de varias líneas?",correct:"/* comentario */",options:["// comentario","<!-- -->","/* comentario */","/** comentario */"],example:"Los comentarios multilínea van entre /* y */<br>· PDF Tema 1 · pág. 1"},
+{tpl:"¿Qué tipo permite números decimales largos?",correct:"double",options:["float","double","int","long"],example:"double permite mayor precisión en números decimales que float<br>· PDF Tema 1 · pág. 2"},
+{tpl:"¿Qué sufijo se usa para literales long?",correct:"L",options:["l","D","F","L"],example:"El sufijo L indica que el literal es de tipo long<br>· PDF Tema 1 · pág. 3"},
+{tpl:"¿Qué prefijo indica un número binario?",correct:"0b",options:["0x","0b","0","0d"],example:"Los literales binarios comienzan por 0b o 0B<br>· PDF Tema 1 · pág. 4"},
+{tpl:"¿Qué prefijo indica un número hexadecimal?",correct:"0x",options:["0b","0h","0x","0"],example:"Los números hexadecimales se identifican con el prefijo 0x<br>· PDF Tema 1 · pág. 4"},
+{tpl:"¿Qué conversión requiere casting explícito?",correct:"De double a int",options:["int a long","float a double","double a int","char a int"],example:"Cuando hay pérdida de información es obligatorio usar casting explícito<br>· PDF Tema 1 · pág. 8"},
+{tpl:"¿Cómo se hace un casting explícito?",correct:"(int) numero",options:["int(numero)","(int) numero","numero.int()","cast(numero)"],example:"El tipo de destino se indica entre paréntesis antes del valor<br>· PDF Tema 1 · pág. 8"},
+{tpl:"¿Qué operador incrementa en una unidad?",correct:"++",options:["+=","++","--","**"],example:"++ aumenta el valor de la variable en una unidad<br>· PDF Tema 1 · pág. 11"},
+{tpl:"¿Qué operador calcula el resto de una división?",correct:"%",options:["/","%","//","mod"],example:"El operador % devuelve el resto de la división entera<br>· PDF Tema 1 · pág. 10"},
+{tpl:"¿Qué estructura permite múltiples condiciones encadenadas?",correct:"if else",options:["switch","if else","while","for"],example:"if else permite evaluar varias condiciones de forma secuencial<br>· PDF Tema 1 · pág. 12"},
+{tpl:"¿Qué instrucción finaliza un método y devuelve un valor?",correct:"return",options:["break","exit","return","continue"],example:"return finaliza el método y envía un valor al llamador<br>· PDF Tema 1 · pág. 16"},
+{tpl:"¿Qué palabra clave indica que un método no devuelve valor?",correct:"void",options:["null","method","void","def"],example:"void indica que el método no retorna ningún valor<br>· PDF Tema 1 · pág. 16"},
+{tpl:"¿Qué significa que Java sea independiente de plataforma?",correct:"Se ejecuta en cualquier sistema con JVM",options:["Solo funciona en Windows","Depende del hardware","Se ejecuta en cualquier sistema con JVM","Necesita recompilarse siempre"],example:"El código Java se ejecuta sobre la JVM independientemente del sistema operativo<br>· PDF Tema 1 · pág. 1"},
+{tpl:"¿Qué método convierte String a int?",correct:"Integer.parseInt()",options:["int.parse()","parseInt()","Integer.parseInt()","toInt()"],example:"Integer.parseInt convierte un texto numérico en entero<br>· PDF Tema 1 · pág. 9"},
+{tpl:"¿Qué método convierte int a String?",correct:"String.valueOf()",options:["toString()","String.parse()","String.valueOf()","Integer.toString()"],example:"String.valueOf transforma un valor numérico en texto<br>· PDF Tema 1 · pág. 9"},
+{tpl:"¿Qué operador lógico representa OR?",correct:"||",options:["|","||","&&","!"],example:"|| devuelve true si al menos una condición es verdadera<br>· PDF Tema 1 · pág. 11"},
+{tpl:"¿Qué operador niega una condición?",correct:"!",options:["!=","!","not","&&"],example:"! invierte el valor lógico de una condición<br>· PDF Tema 1 · pág. 11"},
+{tpl:"¿Qué tipo de bucle se recomienda cuando se conoce el número de iteraciones?",correct:"for",options:["while","do-while","for","if"],example:"for es el bucle recomendado cuando se conoce cuántas veces se repite<br>· PDF Tema 1 · pág. 15"},
+{tpl:"¿Qué palabra reservada define una clase?",correct:"class",options:["struct","class","object","define"],example:"class se usa para definir una nueva clase en Java<br>· PDF Tema 1 · pág. 16"},
+{tpl:"¿Qué palabra reservada crea un nuevo objeto?",correct:"new",options:["create","make","new","init"],example:"new reserva memoria y llama al constructor de la clase<br>· PDF Tema 1 · pág. 16"},
+{tpl:"¿Qué prefijo indica un literal octal en Java?",correct:"0",options:["0b","0x","0","0o"],example:"Los literales que empiezan por 0 se interpretan como octales<br>· PDF Tema 1 · pág. 4"},
+{tpl:"¿Qué representa el literal 012 en Java?",correct:"Un número en base octal",options:["Un número decimal","Un número binario","Un número en base octal","Un número hexadecimal"],example:"012 se interpreta como octal, no como decimal<br>· PDF Tema 1 · pág. 4"},
+{tpl:"¿Qué notación se usa para números en notación científica?",correct:"e o E",options:["^","*10","e o E","sci"],example:"La notación científica usa e o E para potencias de 10<br>· PDF Tema 1 · pág. 4"},
+{tpl:"¿Cuál es un literal double válido?",correct:"3.5e2",options:["3,5e2","3.5e2","3.5^2","35e"],example:"3.5e2 representa 3.5 multiplicado por 10 elevado a 2<br>· PDF Tema 1 · pág. 4"},
+{tpl:"¿Qué carácter mejora la legibilidad de números largos?",correct:"_",options:["-","_",",","."],example:"El guion bajo permite separar dígitos sin afectar al valor numérico<br>· PDF Tema 1 · pág. 5"},
+{tpl:"¿Dónde NO se puede usar el carácter _ en un literal?",correct:"Al final del número",options:["Entre dígitos","Al principio","Al final del número","En números largos"],example:"El guion bajo no puede colocarse al inicio ni al final del literal<br>· PDF Tema 1 · pág. 5"},
+{tpl:"¿Cuál es un nombre de variable válido?",correct:"_contador",options:["2contador","int","_contador","contador-total"],example:"Los identificadores pueden empezar por _ y no pueden usar guiones ni palabras reservadas<br>· PDF Tema 1 · pág. 2"},
+{tpl:"¿Cuál NO es una regla válida para identificadores?",correct:"Pueden empezar por un número",options:["Distinguen mayúsculas","Pueden empezar por _","Pueden empezar por letra","Pueden empezar por un número"],example:"Los identificadores nunca pueden comenzar por un dígito<br>· PDF Tema 1 · pág. 2"},
+{tpl:"¿Qué ocurre si se usa una palabra reservada como nombre?",correct:"Error de compilación",options:["Se ejecuta normalmente","Error en ejecución","Error de compilación","Se ignora"],example:"Las palabras reservadas no pueden usarse como identificadores<br>· PDF Tema 1 · pág. 2"},
+{tpl:"¿Qué operador tiene mayor prioridad?",correct:"*",options:["+",">","*","=="],example:"Los operadores aritméticos de multiplicación tienen mayor prioridad que la suma<br>· PDF Tema 1 · pág. 11"},
+{tpl:"¿En qué orden se evalúan los operadores?",correct:"Multiplicación antes que suma",options:["Suma antes que multiplicación","Depende del valor","Multiplicación antes que suma","De izquierda a derecha siempre"],example:"Java respeta la prioridad matemática estándar de operadores<br>· PDF Tema 1 · pág. 11"},
+{tpl:"¿Qué operador suma y asigna en una sola operación?",correct:"+=",options:["=+","++","+=",":="],example:"+= suma el valor indicado y lo asigna a la variable<br>· PDF Tema 1 · pág. 11"},
+{tpl:"¿Qué hace la instrucción x += 2?",correct:"Suma 2 al valor de x",options:["Asigna 2 a x","Multiplica x por 2","Suma 2 al valor de x","Incrementa x en 1"],example:"x += 2 es equivalente a x = x + 2<br>· PDF Tema 1 · pág. 11"},
+{tpl:"¿Qué diferencia hay entre & y &&?",correct:"&& evalúa cortocircuito",options:["No hay diferencia","& es más rápido","&& evalúa cortocircuito","& solo sirve con boolean"],example:"&& no evalúa la segunda condición si la primera es falsa<br>· PDF Tema 1 · pág. 11"},
+{tpl:"¿Qué diferencia hay entre | y ||?",correct:"|| evalúa cortocircuito",options:["| no existe","No hay diferencia","|| evalúa cortocircuito","| solo es lógico"],example:"|| evita evaluar la segunda condición si la primera es verdadera<br>· PDF Tema 1 · pág. 11"},
+{tpl:"¿Qué imprime este código: int x=5; System.out.print(x++);?",correct:"5",options:["4","5","6","Error"],example:"El postincremento imprime primero el valor y luego lo incrementa<br>· PDF Tema 1 · pág. 11"},
+{tpl:"¿Qué imprime este código: int x=5; System.out.print(++x);?",correct:"6",options:["5","6","4","Error"],example:"El preincremento incrementa el valor antes de imprimirlo<br>· PDF Tema 1 · pág. 11"},
+{tpl:"¿Cuál es la forma correcta de recorrer un array con for?",correct:"for(int i=0;i<array.length;i++)",options:["for(i in array)","for(int i=1;i<=array;i++)","for(int i=0;i<array.length;i++)","foreach(array)"],example:"El recorrido va desde el índice 0 hasta length-1<br>· PDF Tema 1 · pág. 15"},
+{tpl:"¿Qué ocurre si se accede a un índice fuera del array?",correct:"Error en tiempo de ejecución",options:["Devuelve null","Error de compilación","Error en tiempo de ejecución","Devuelve 0"],example:"Acceder fuera del rango provoca una excepción en ejecución<br>· PDF Tema 1 · pág. 15"},
+{tpl:"¿Qué imprime este código? int i=0; while(i<3){System.out.print(i);i++;}",correct:"012",options:["123","012","01","Error"],example:"El bucle imprime los valores 0, 1 y 2 antes de finalizar<br>· PDF Tema 1 · pág. 14"},
+{tpl:"¿Qué ocurre si falta break en un switch?",correct:"Ejecuta los casos siguientes",options:["Da error","Sale del switch","Ejecuta los casos siguientes","Ignora el caso"],example:"Sin break se produce el efecto fall-through en el switch<br>· PDF Tema 1 · pág. 13"},
+{tpl:"¿Qué tipo de error detecta el compilador?",correct:"Error de sintaxis",options:["Error lógico","Error en ejecución","Error de sintaxis","Error de datos"],example:"Los errores de sintaxis se detectan antes de ejecutar el programa<br>· PDF Tema 1 · pág. 1"},
+{tpl:"¿Qué tipo de error NO detecta el compilador?",correct:"Error lógico",options:["Error de sintaxis","Error lógico","Error de tipo","Error de declaración"],example:"Los errores lógicos solo se detectan durante la ejecución<br>· PDF Tema 1 · pág. 1"},
+{tpl:"¿Qué instrucción permite salir de un switch y devolver un valor?",correct:"return",options:["break","continue","return","exit"],example:"return finaliza el método incluso dentro de un switch<br>· PDF Tema 1 · pág. 16"},
+{tpl:"¿Qué palabra reservada define el punto de entrada del programa?",correct:"main",options:["start","init","main","run"],example:"main es el método que inicia la ejecución del programa Java<br>· PDF Tema 1 · pág. 16"}
+];
+
+const StringsArrays = [
+{tpl:"¿Qué es un String en Java?",correct:"Un objeto que representa una cadena de caracteres",options:["Un tipo primitivo","Un array de char","Un objeto que representa una cadena de caracteres","Un tipo numérico"],example:"En Java, String es una clase (objeto) que encapsula texto y ofrece métodos para trabajar con cadenas<br>· PDF Tema 2 · pág. 1"},
+{tpl:"¿Cómo se crea correctamente un String literal?",correct:"String s = \"Hola\";",options:["String s = 'Hola';","String s = Hola;","String s = \"Hola\";","String s = new char[];"],example:"Los literales String se definen entre comillas dobles y se almacenan en el pool de Strings<br>· PDF Tema 2 · pág. 1"},
+{tpl:"¿Cómo se crea un String usando new?",correct:"String s = new String(\"Hola\");",options:["String s = String(\"Hola\");","String s = new String(\"Hola\");","new String s = \"Hola\";","String(\"Hola\");"],example:"Usar new crea explícitamente un nuevo objeto String en memoria, aunque exista otro igual<br>· PDF Tema 2 · pág. 1"},
+{tpl:"¿Qué operador se usa para concatenar Strings?",correct:"+",options:["&","+","concat","+="],example:"El operador + une cadenas y convierte automáticamente otros tipos a texto<br>· PDF Tema 2 · pág. 1"},
+{tpl:"¿Qué devuelve el método length() en un String?",correct:"El número de caracteres",options:["El tamaño en bytes","El número de palabras","El número de caracteres","El índice final"],example:"length() cuenta todos los caracteres del String, empezando desde el índice 0<br>· PDF Tema 2 · pág. 1"},
+{tpl:"¿Qué valor devuelve \"abc\".length()?",correct:"3",options:["2","3","4","Error"],example:"El String \"abc\" tiene tres caracteres: a, b y c<br>· PDF Tema 2 · pág. 2"},
+{tpl:"¿Qué método extrae un carácter de un String?",correct:"charAt()",options:["char()","getChar()","charAt()","substring()"],example:"charAt(indice) permite acceder a un carácter concreto usando índices desde 0<br>· PDF Tema 2 · pág. 2"},
+{tpl:"¿Qué devuelve \"hola\".charAt(2)?",correct:"'l'",options:["'o'","'l'","'a'","Error"],example:"Los índices empiezan en 0, por lo que h=0, o=1, l=2<br>· PDF Tema 2 · pág. 2"},
+{tpl:"¿Qué método compara el contenido de dos Strings?",correct:"equals()",options:["==","compare","equals()","same()"],example:"equals() compara carácter a carácter el contenido real de las cadenas<br>· PDF Tema 2 · pág. 2"},
+{tpl:"¿Qué devuelve \"hola\".equals(\"HOLA\")?",correct:"false",options:["true","false","Error","null"],example:"equals distingue entre mayúsculas y minúsculas, por lo que las cadenas no son iguales<br>· PDF Tema 2 · pág. 2"},
+{tpl:"¿Qué método ignora mayúsculas al comparar?",correct:"equalsIgnoreCase()",options:["equals()","compareTo()","equalsIgnoreCase()","ignoreCase()"],example:"equalsIgnoreCase compara el texto sin tener en cuenta mayúsculas o minúsculas<br>· PDF Tema 2 · pág. 2"},
+{tpl:"¿Qué método busca la primera aparición de un carácter?",correct:"indexOf()",options:["search()","find()","indexOf()","charAt()"],example:"indexOf devuelve el índice donde aparece por primera vez un carácter o subcadena<br>· PDF Tema 2 · pág. 3"},
+{tpl:"¿Qué devuelve indexOf() si no encuentra el valor?",correct:"-1",options:["0","null","-1","Error"],example:"Cuando la búsqueda no tiene resultado, indexOf siempre devuelve -1<br>· PDF Tema 2 · pág. 3"},
+{tpl:"¿Qué método busca desde el final del String?",correct:"lastIndexOf()",options:["indexOf()","reverse()","lastIndexOf()","searchLast()"],example:"lastIndexOf localiza la última coincidencia empezando desde el final del texto<br>· PDF Tema 2 · pág. 3"},
+{tpl:"¿Qué método convierte a mayúsculas?",correct:"toUpperCase()",options:["upper()","toUpper()","toUpperCase()","capitalize()"],example:"toUpperCase devuelve un nuevo String con todos los caracteres en mayúsculas<br>· PDF Tema 2 · pág. 3"},
+{tpl:"¿Qué método convierte a minúsculas?",correct:"toLowerCase()",options:["lower()","toLower()","toLowerCase()","min()"],example:"toLowerCase genera un nuevo String con todos los caracteres en minúsculas<br>· PDF Tema 2 · pág. 3"},
+{tpl:"¿Qué método extrae una subcadena?",correct:"substring()",options:["slice()","sub()","substring()","cut()"],example:"substring permite obtener una parte del String indicando índices de inicio y fin<br>· PDF Tema 2 · pág. 4"},
+{tpl:"¿Qué devuelve \"hola mundo\".substring(0,4)?",correct:"\"hola\"",options:["\"hola \"","\"hol\"","\"hola\"","\"mundo\""],example:"substring incluye el índice inicial pero excluye el índice final indicado<br>· PDF Tema 2 · pág. 4"},
+{tpl:"¿Qué es un array en Java?",correct:"Una colección de elementos del mismo tipo",options:["Un objeto String","Una colección dinámica","Una colección de elementos del mismo tipo","Un tipo primitivo"],example:"Un array almacena varios valores del mismo tipo bajo un mismo nombre<br>· PDF Tema 2 · pág. 4"},
+{tpl:"¿Cómo se declara un array de enteros?",correct:"int[] a;",options:["int a;","int a[];","int[] a;","array int a;"],example:"La declaración define el tipo de datos que almacenará el array<br>· PDF Tema 2 · pág. 4"},
+{tpl:"¿Cómo se crea un array de tamaño 10?",correct:"new int[10]",options:["int[10]","new int(10)","new int[10]","int size=10"],example:"Al crear el array se reserva memoria para 10 posiciones consecutivas<br>· PDF Tema 2 · pág. 4"},
+{tpl:"¿Cuál es el primer índice de un array?",correct:"0",options:["1","-1","0","Depende del tamaño"],example:"En Java todos los arrays empiezan siempre en el índice 0<br>· PDF Tema 2 · pág. 4"},
+{tpl:"¿Cuál es el último índice de un array de tamaño n?",correct:"n-1",options:["n","n+1","n-1","Depende"],example:"Si el tamaño es n, los índices válidos van de 0 a n-1<br>· PDF Tema 2 · pág. 4"},
+{tpl:"¿Cómo se inicializa un array con valores?",correct:"int[] a = {1,2,3};",options:["int a = (1,2,3);","int[] a = {1,2,3};","int a[] = (1,2,3);","array a = {1,2,3};"],example:"La inicialización directa asigna valores al array en el momento de su creación<br>· PDF Tema 2 · pág. 5"},
+{tpl:"¿Qué propiedad indica el tamaño del array?",correct:"length",options:["size()","length()","length","count"],example:"length es una propiedad, no un método, y devuelve el número de elementos<br>· PDF Tema 2 · pág. 5"},
+{tpl:"¿Cómo se accede a un elemento del array?",correct:"a[0]",options:["a(0)","a[0]","a{0}","a.get(0)"],example:"El acceso a un array se realiza usando corchetes con el índice deseado<br>· PDF Tema 2 · pág. 5"},
+{tpl:"¿Qué ocurre si accedes fuera del rango del array?",correct:"Error en tiempo de ejecución",options:["Devuelve null","Error de compilación","Error en tiempo de ejecución","Devuelve 0"],example:"Acceder a un índice inválido provoca una excepción en tiempo de ejecución<br>· PDF Tema 2 · pág. 5"},
+{tpl:"¿Qué clase permite trabajar con arrays utilitarios?",correct:"Arrays",options:["Array","Collections","Arrays","List"],example:"La clase Arrays proporciona métodos estáticos para manipular arrays<br>· PDF Tema 2 · pág. 6"},
+{tpl:"¿Qué método copia un array completo?",correct:"Arrays.copyOf()",options:["copy()","clone()","Arrays.copyOf()","System.copy()"],example:"copyOf crea un nuevo array copiando todos los elementos del original<br>· PDF Tema 2 · pág. 6"},
+{tpl:"¿Qué método compara dos arrays?",correct:"Arrays.equals()",options:["equals()","Arrays.compare()","Arrays.equals()","=="],example:"Arrays.equals compara elemento a elemento el contenido de dos arrays<br>· PDF Tema 2 · pág. 6"},
+{tpl:"¿Qué método ordena un array?",correct:"Arrays.sort()",options:["sort()","Arrays.sort()","order()","Arrays.order()"],example:"Arrays.sort ordena los elementos del array en orden ascendente<br>· PDF Tema 2 · pág. 6"},
+{tpl:"¿Qué método rellena un array con un valor?",correct:"Arrays.fill()",options:["fill()","Arrays.fill()","set()","Arrays.set()"],example:"Arrays.fill asigna el mismo valor a todas las posiciones del array<br>· PDF Tema 2 · pág. 6"},
+{tpl:"¿Qué método convierte un array en String?",correct:"Arrays.toString()",options:["toString()","Array.toString()","Arrays.toString()","printArray()"],example:"Arrays.toString devuelve una representación textual del contenido del array<br>· PDF Tema 2 · pág. 6"},
+{tpl:"¿Cómo se recorre un array con for?",correct:"for(int i=0;i<a.length;i++)",options:["for(i<a)","for(int i=1;i<=a.length;i++)","for(int i=0;i<a.length;i++)","foreach(a)"],example:"El bucle for recorre el array desde el índice 0 hasta length-1<br>· PDF Tema 2 · pág. 5"},
+{tpl:"¿Se puede cambiar el tamaño de un array?",correct:"No",options:["Sí","Solo si es String","No","Depende del tipo"],example:"El tamaño de un array es fijo y no puede modificarse tras su creación<br>· PDF Tema 2 · pág. 4"},
+{tpl:"¿Qué tipo de array puede almacenar textos?",correct:"String[]",options:["char[]","text[]","String[]","word[]"],example:"Un array de String permite almacenar múltiples cadenas de texto<br>· PDF Tema 2 · pág. 5"},
+{tpl:"¿Qué imprime este código: String a=\"1\"; String b=\"2\"; System.out.print(a+b);?",correct:"12",options:["3","12","Error","1 2"],example:"Al usar + con Strings se produce concatenación, no suma aritmética<br>· PDF Tema 2 · pág. 1"},
+{tpl:"¿Qué ocurre al sumar String y número?",correct:"Se concatena como texto",options:["Se suma","Error","Se concatena como texto","Depende"],example:"Java convierte el número a String y concatena ambos valores<br>· PDF Tema 2 · pág. 1"},
+{tpl:"¿Qué devuelve Arrays.copyOfRange(a,1,3)?",correct:"Copia desde índice 1 hasta 2",options:["Copia todo","Copia desde 1 hasta 3","Copia desde índice 1 hasta 2","Error"],example:"copyOfRange incluye el índice inicial y excluye el índice final<br>· PDF Tema 2 · pág. 6"},
+{tpl:"¿Qué tipo de dato devuelve charAt()?",correct:"char",options:["String","char","int","byte"],example:"charAt devuelve un carácter individual, no un String<br>· PDF Tema 2 · pág. 2"},
+{tpl:"¿Qué método devuelve la última coincidencia?",correct:"lastIndexOf()",options:["indexOf()","findLast()","lastIndexOf()","reverseFind()"],example:"lastIndexOf localiza la última aparición de un carácter o subcadena<br>· PDF Tema 2 · pág. 3"},
+{tpl:"¿Qué ocurre si substring usa un índice inválido?",correct:"Error en tiempo de ejecución",options:["Devuelve null","Devuelve vacío","Error en tiempo de ejecución","Error de compilación"],example:"Usar índices fuera del rango 0 a length-1 provoca una excepción en ejecución<br>· PDF Tema 2 · pág. 4"}
+];
+
+const Poo = [
+{tpl:"¿Qué es la Programación Orientada a Objetos?",correct:"Un paradigma basado en objetos que combinan datos y métodos",options:["Un lenguaje de programación","Un paradigma basado en objetos que combinan datos y métodos","Una técnica solo para bases de datos","Un tipo de programación secuencial"],example:"La POO organiza el código en objetos que contienen datos (atributos) y comportamientos (métodos)<br>· PDF Tema 3 · pág. 1"},
+{tpl:"¿Qué representa una clase en Java?",correct:"Una plantilla para crear objetos",options:["Un objeto en memoria","Una función","Una plantilla para crear objetos","Un método especial"],example:"Una clase define la estructura y el comportamiento que tendrán los objetos creados a partir de ella<br>· PDF Tema 3 · pág. 1"},
+{tpl:"¿Qué es un objeto?",correct:"Una instancia de una clase",options:["Una variable","Un método","Una instancia de una clase","Un atributo"],example:"Un objeto es una clase llevada a memoria, con valores concretos en sus atributos<br>· PDF Tema 3 · pág. 1"},
+{tpl:"¿Qué palabra reservada crea un objeto?",correct:"new",options:["create","make","new","init"],example:"La palabra new reserva memoria y ejecuta el constructor de la clase<br>· PDF Tema 3 · pág. 1"},
+{tpl:"¿Qué es un atributo?",correct:"Una variable definida dentro de una clase",options:["Un método","Una constante global","Una variable definida dentro de una clase","Un constructor"],example:"Los atributos almacenan el estado del objeto creado a partir de la clase<br>· PDF Tema 3 · pág. 2"},
+{tpl:"¿Qué es un método?",correct:"Una función definida dentro de una clase",options:["Una variable","Un bucle","Una función definida dentro de una clase","Un paquete"],example:"Los métodos definen las acciones o comportamientos que puede realizar un objeto<br>· PDF Tema 3 · pág. 2"},
+{tpl:"¿Qué palabra clave se usa para acceder a los atributos del propio objeto?",correct:"this",options:["self","this","super","current"],example:"this hace referencia al objeto actual y permite diferenciar atributos de parámetros<br>· PDF Tema 3 · pág. 2"},
+{tpl:"¿Qué es un constructor?",correct:"Un método especial que inicializa objetos",options:["Un método estático","Un atributo","Un método especial que inicializa objetos","Una interfaz"],example:"El constructor se ejecuta al crear el objeto y sirve para inicializar sus atributos<br>· PDF Tema 3 · pág. 3"},
+{tpl:"¿Cómo se llama un constructor?",correct:"Igual que la clase",options:["Siempre main","Como el método","Igual que la clase","Libre"],example:"El constructor debe tener exactamente el mismo nombre que la clase<br>· PDF Tema 3 · pág. 3"},
+{tpl:"¿Puede una clase tener varios constructores?",correct:"Sí",options:["No","Solo uno","Sí","Solo si es abstracta"],example:"La sobrecarga permite definir varios constructores con distintos parámetros<br>· PDF Tema 3 · pág. 3"},
+{tpl:"¿Qué es la encapsulación?",correct:"Ocultar los datos y controlar su acceso",options:["Repetir código","Herencia múltiple","Ocultar los datos y controlar su acceso","Crear interfaces"],example:"La encapsulación protege los atributos usando modificadores de acceso y métodos getter/setter<br>· PDF Tema 3 · pág. 4"},
+{tpl:"¿Qué modificador impide el acceso desde otras clases?",correct:"private",options:["public","protected","private","default"],example:"private limita el acceso a la propia clase donde se declara el atributo o método<br>· PDF Tema 3 · pág. 4"},
+{tpl:"¿Qué modificador permite acceso desde el mismo paquete?",correct:"default",options:["public","private","default","static"],example:"El acceso por defecto permite usar el miembro solo dentro del mismo paquete<br>· PDF Tema 3 · pág. 4"},
+{tpl:"¿Qué modificador permite acceso desde subclases?",correct:"protected",options:["private","protected","public","final"],example:"protected permite acceso desde el mismo paquete y desde clases hijas<br>· PDF Tema 3 · pág. 4"},
+{tpl:"¿Qué método se usa normalmente para leer un atributo privado?",correct:"getter",options:["setter","getter","constructor","static"],example:"Los getters devuelven el valor de atributos privados respetando la encapsulación<br>· PDF Tema 3 · pág. 4"},
+{tpl:"¿Qué método se usa normalmente para modificar un atributo privado?",correct:"setter",options:["getter","setter","this","super"],example:"Los setters permiten modificar atributos privados de forma controlada<br>· PDF Tema 3 · pág. 4"},
+{tpl:"¿Qué palabra clave indica herencia?",correct:"extends",options:["implements","inherits","extends","super"],example:"extends permite que una clase hija herede atributos y métodos de la clase padre<br>· PDF Tema 3 · pág. 5"},
+{tpl:"¿Cuántas clases puede extender una clase Java?",correct:"Una",options:["Ninguna","Una","Varias","Infinitas"],example:"Java solo permite herencia simple entre clases para evitar ambigüedades<br>· PDF Tema 3 · pág. 5"},
+{tpl:"¿Qué palabra permite llamar al constructor padre?",correct:"super",options:["this","parent","super","base"],example:"super llama al constructor o métodos de la clase padre desde la clase hija<br>· PDF Tema 3 · pág. 5"},
+{tpl:"¿Qué se hereda de una clase padre?",correct:"Atributos y métodos no privados",options:["Solo métodos","Solo atributos","Atributos y métodos no privados","Constructores"],example:"Los miembros private no se heredan directamente en la clase hija<br>· PDF Tema 3 · pág. 5"},
+{tpl:"¿Qué es el polimorfismo?",correct:"Capacidad de usar un objeto como su clase padre",options:["Repetición de código","Uso de interfaces","Capacidad de usar un objeto como su clase padre","Sobrecarga de clases"],example:"El polimorfismo permite tratar objetos distintos como si fueran del mismo tipo base<br>· PDF Tema 3 · pág. 6"},
+{tpl:"¿Qué ocurre si se sobrescribe un método?",correct:"Se ejecuta el método de la clase hija",options:["Se produce error","Se ejecuta el método padre","Se ejecuta el método de la clase hija","Se ignora"],example:"La sobrescritura permite cambiar el comportamiento heredado en la clase hija<br>· PDF Tema 3 · pág. 6"},
+{tpl:"¿Qué anotación indica sobrescritura de métodos?",correct:"@Override",options:["@Overload","@Override","@Rewrite","@Method"],example:"@Override asegura que el método realmente sobrescribe uno de la clase padre<br>· PDF Tema 3 · pág. 6"},
+{tpl:"¿Qué palabra clave impide la herencia?",correct:"final",options:["static","private","final","abstract"],example:"Una clase final no puede ser extendida por ninguna otra clase<br>· PDF Tema 3 · pág. 6"},
+{tpl:"¿Puede una clase final tener subclases?",correct:"No",options:["Sí","No","Solo una","Depende"],example:"Al marcar una clase como final se prohíbe completamente la herencia<br>· PDF Tema 3 · pág. 6"},
+{tpl:"¿Qué es una clase abstracta?",correct:"Una clase que no se puede instanciar",options:["Una interfaz","Una clase incompleta","Una clase que no se puede instanciar","Una clase vacía"],example:"Las clases abstractas sirven como base para otras clases y no se crean directamente<br>· PDF Tema 3 · pág. 7"},
+{tpl:"¿Qué palabra clave define una clase abstracta?",correct:"abstract",options:["interface","abstract","final","static"],example:"abstract indica que la clase contiene comportamiento incompleto<br>· PDF Tema 3 · pág. 7"},
+{tpl:"¿Puede una clase abstracta tener métodos implementados?",correct:"Sí",options:["No","Sí","Solo abstractos","Solo estáticos"],example:"Una clase abstracta puede combinar métodos abstractos y métodos con código<br>· PDF Tema 3 · pág. 7"},
+{tpl:"¿Qué es una interfaz?",correct:"Un contrato de métodos sin implementación",options:["Una clase especial","Un contrato de métodos sin implementación","Una clase abstracta","Un paquete"],example:"Las interfaces definen qué métodos debe implementar una clase, pero no cómo<br>· PDF Tema 3 · pág. 8"},
+{tpl:"¿Qué palabra clave implementa una interfaz?",correct:"implements",options:["extends","interface","implements","inherit"],example:"implements obliga a la clase a definir todos los métodos de la interfaz<br>· PDF Tema 3 · pág. 8"},
+{tpl:"¿Puede una clase implementar varias interfaces?",correct:"Sí",options:["No","Solo una","Sí","Solo si es abstracta"],example:"Java permite herencia múltiple de comportamiento usando interfaces<br>· PDF Tema 3 · pág. 8"},
+{tpl:"¿Pueden las interfaces tener atributos?",correct:"Sí, constantes",options:["No","Sí, variables","Sí, constantes","Solo privados"],example:"Los atributos de una interfaz son implícitamente public static final<br>· PDF Tema 3 · pág. 8"},
+{tpl:"¿Cómo son los métodos de una interfaz?",correct:"Públicos y abstractos",options:["Privados","Estáticos","Públicos y abstractos","Final"],example:"Los métodos de una interfaz son públicos y no tienen implementación<br>· PDF Tema 3 · pág. 8"},
+{tpl:"¿Qué palabra se usa para agrupar clases?",correct:"package",options:["import","class","package","group"],example:"package organiza las clases en espacios de nombres para evitar conflictos<br>· PDF Tema 3 · pág. 9"},
+{tpl:"¿Qué palabra permite usar clases de otro paquete?",correct:"import",options:["include","using","import","require"],example:"import permite acceder a clases definidas en otros paquetes<br>· PDF Tema 3 · pág. 9"},
+{tpl:"¿Qué es la sobrecarga de métodos?",correct:"Métodos con mismo nombre y distintos parámetros",options:["Métodos iguales","Métodos heredados","Métodos con mismo nombre y distintos parámetros","Métodos abstractos"],example:"La sobrecarga permite definir varios métodos con el mismo nombre y distinta firma<br>· PDF Tema 3 · pág. 3"},
+{tpl:"¿Puede cambiar el tipo de retorno en la sobrecarga?",correct:"No",options:["Sí","No","Solo si es abstracto","Solo con interfaces"],example:"Para que exista sobrecarga deben cambiar los parámetros, no el retorno<br>· PDF Tema 3 · pág. 3"},
+{tpl:"¿Qué ocurre si no se define ningún constructor?",correct:"Java crea uno por defecto",options:["Error","No se puede instanciar","Java crea uno por defecto","Se hereda del padre"],example:"Si no hay constructor, Java genera uno vacío automáticamente<br>· PDF Tema 3 · pág. 3"},
+{tpl:"¿Qué palabra clave indica que un atributo es compartido?",correct:"static",options:["final","static","public","this"],example:"static hace que el atributo pertenezca a la clase y no a cada objeto<br>· PDF Tema 3 · pág. 2"},
+{tpl:"¿A qué pertenece un atributo static?",correct:"A la clase",options:["Al objeto","Al método","A la clase","Al paquete"],example:"Los miembros static se comparten entre todas las instancias de la clase<br>· PDF Tema 3 · pág. 2"},
+{tpl:"¿Qué método es el punto de entrada del programa?",correct:"main",options:["start","run","main","init"],example:"El método main es el primero que se ejecuta al iniciar un programa Java<br>· PDF Tema 3 · pág. 9"}
+];
+
+const Colecciones = [
+{tpl:"¿Qué es una colección en Java?",correct:"Un objeto que agrupa otros objetos",options:["Un tipo primitivo","Un objeto que agrupa otros objetos","Un array fijo","Un paquete"],example:"Una colección permite almacenar y manipular conjuntos de objetos de forma dinámica<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué interfaz es la base de todas las colecciones?",correct:"Collection",options:["List","Iterable","Collection","Collections"],example:"La interfaz Collection define los métodos comunes de las colecciones<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿En qué paquete se encuentra Collection?",correct:"java.util",options:["java.lang","java.io","java.util","java.collections"],example:"Las colecciones estándar pertenecen al paquete java.util<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué método añade un elemento a una colección?",correct:"add()",options:["insert()","push()","add()","put()"],example:"add inserta un nuevo elemento en la colección<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué método elimina un elemento concreto?",correct:"remove()",options:["delete()","remove()","clear()","pop()"],example:"remove elimina la primera coincidencia del elemento indicado<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué método devuelve el número de elementos?",correct:"size()",options:["length","count()","size()","getSize()"],example:"size devuelve cuántos elementos contiene la colección<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué método comprueba si la colección está vacía?",correct:"isEmpty()",options:["empty()","isEmpty()","size()==0","clear()"],example:"isEmpty devuelve true si no hay elementos almacenados<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué método comprueba si existe un elemento?",correct:"contains()",options:["exists()","find()","contains()","has()"],example:"contains verifica si un objeto está presente en la colección<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué interfaz permite recorrer colecciones con for-each?",correct:"Iterable",options:["Collection","Iterator","Iterable","List"],example:"Iterable define el método iterator necesario para for-each<br>· PDF Tema 4 · pág. 2"},
+{tpl:"¿Qué interfaz representa una lista ordenada?",correct:"List",options:["Set","Queue","List","Map"],example:"List mantiene el orden de inserción y permite duplicados<br>· PDF Tema 4 · pág. 3"},
+{tpl:"¿Permite List elementos duplicados?",correct:"Sí",options:["No","Sí","Depende","Solo ArrayList"],example:"Las listas pueden contener valores repetidos<br>· PDF Tema 4 · pág. 3"},
+{tpl:"¿Qué método obtiene un elemento por índice en List?",correct:"get()",options:["fetch()","get()","at()","index()"],example:"get permite acceder a un elemento usando su índice<br>· PDF Tema 4 · pág. 3"},
+{tpl:"¿Qué método inserta un elemento en una posición concreta?",correct:"add(int, elemento)",options:["insert()","add()","add(int, elemento)","set()"],example:"add con índice desplaza los elementos existentes<br>· PDF Tema 4 · pág. 3"},
+{tpl:"¿Qué método reemplaza un elemento existente?",correct:"set()",options:["replace()","add()","set()","update()"],example:"set sustituye el elemento en el índice indicado<br>· PDF Tema 4 · pág. 3"},
+{tpl:"¿Qué método devuelve la primera posición de un elemento?",correct:"indexOf()",options:["firstIndex()","indexOf()","lastIndexOf()","find()"],example:"indexOf devuelve -1 si el elemento no existe<br>· PDF Tema 4 · pág. 3"},
+{tpl:"¿Qué clase implementa List con array dinámico?",correct:"ArrayList",options:["LinkedList","Vector","ArrayList","HashSet"],example:"ArrayList almacena los elementos en memoria contigua<br>· PDF Tema 4 · pág. 4"},
+{tpl:"¿Qué ventaja tiene ArrayList?",correct:"Acceso rápido por índice",options:["Inserciones rápidas","Acceso rápido por índice","Menor memoria","Sin duplicados"],example:"El acceso aleatorio en ArrayList es muy eficiente<br>· PDF Tema 4 · pág. 4"},
+{tpl:"¿Qué desventaja tiene ArrayList?",correct:"Inserciones lentas en medio",options:["Acceso lento","Inserciones lentas en medio","No permite duplicados","No mantiene orden"],example:"Insertar en posiciones intermedias requiere desplazar elementos<br>· PDF Tema 4 · pág. 4"},
+{tpl:"¿Qué clase implementa List con lista enlazada?",correct:"LinkedList",options:["ArrayList","LinkedList","Vector","TreeList"],example:"LinkedList almacena los elementos mediante nodos enlazados<br>· PDF Tema 4 · pág. 6"},
+{tpl:"¿Qué ventaja tiene LinkedList?",correct:"Inserciones y borrados rápidos",options:["Acceso rápido","Inserciones y borrados rápidos","Menor memoria","Ordenación automática"],example:"Modificar enlaces es más eficiente que mover elementos<br>· PDF Tema 4 · pág. 6"},
+{tpl:"¿Qué desventaja tiene LinkedList?",correct:"Acceso lento por índice",options:["Acceso lento por índice","No permite duplicados","Mayor complejidad","No implementa List"],example:"Para acceder a un índice debe recorrer la lista<br>· PDF Tema 4 · pág. 6"},
+{tpl:"¿Qué clase List está obsoleta y es sincronizada?",correct:"Vector",options:["ArrayList","LinkedList","Vector","Stack"],example:"Vector es una clase antigua y sincronizada por defecto<br>· PDF Tema 4 · pág. 8"},
+{tpl:"¿Qué interfaz representa una cola FIFO?",correct:"Queue",options:["List","Set","Queue","Deque"],example:"Queue sigue el principio primero en entrar, primero en salir<br>· PDF Tema 4 · pág. 8"},
+{tpl:"¿Qué método añade un elemento y lanza excepción si falla?",correct:"add()",options:["offer()","add()","push()","insert()"],example:"add lanza una excepción si no puede insertar el elemento<br>· PDF Tema 4 · pág. 9"},
+{tpl:"¿Qué método añade un elemento y devuelve false si falla?",correct:"offer()",options:["add()","offer()","push()","put()"],example:"offer es más seguro porque no lanza excepción<br>· PDF Tema 4 · pág. 9"},
+{tpl:"¿Qué método elimina y devuelve el primer elemento lanzando excepción?",correct:"remove()",options:["poll()","remove()","delete()","pop()"],example:"remove falla si la cola está vacía<br>· PDF Tema 4 · pág. 9"},
+{tpl:"¿Qué método elimina y devuelve el primer elemento o null?",correct:"poll()",options:["remove()","poll()","peek()","element()"],example:"poll devuelve null si la cola está vacía<br>· PDF Tema 4 · pág. 9"},
+{tpl:"¿Qué método consulta el primer elemento sin eliminarlo y lanza excepción?",correct:"element()",options:["peek()","element()","get()","first()"],example:"element accede al primer elemento sin retirarlo<br>· PDF Tema 4 · pág. 9"},
+{tpl:"¿Qué método consulta el primer elemento o null?",correct:"peek()",options:["peek()","element()","poll()","top()"],example:"peek devuelve null si la cola está vacía<br>· PDF Tema 4 · pág. 9"},
+{tpl:"¿Qué clase implementa Queue y List?",correct:"LinkedList",options:["ArrayList","LinkedList","Vector","ArrayDeque"],example:"LinkedList puede usarse como lista o como cola<br>· PDF Tema 4 · pág. 9"},
+{tpl:"¿Qué es un Deque?",correct:"Una cola de doble extremo",options:["Una pila","Una lista","Una cola de doble extremo","Un set"],example:"Deque permite insertar y eliminar por ambos extremos<br>· PDF Tema 4 · pág. 9"},
+{tpl:"¿Permite Set elementos duplicados?",correct:"No",options:["Sí","No","Depende","Solo HashSet"],example:"Set garantiza que no existan elementos repetidos<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué clase Set no mantiene orden?",correct:"HashSet",options:["TreeSet","LinkedHashSet","HashSet","SortedSet"],example:"HashSet no garantiza ningún orden de los elementos<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué clase Set mantiene orden de inserción?",correct:"LinkedHashSet",options:["HashSet","TreeSet","LinkedHashSet","Set"],example:"LinkedHashSet conserva el orden en el que se añaden los elementos<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué clase Set ordena automáticamente los elementos?",correct:"TreeSet",options:["HashSet","LinkedHashSet","TreeSet","SortedList"],example:"TreeSet ordena los elementos según su orden natural<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué método elimina todos los elementos de una colección?",correct:"clear()",options:["removeAll()","delete()","clear()","reset()"],example:"clear vacía completamente la colección<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué método añade todos los elementos de otra colección?",correct:"addAll()",options:["add()","addAll()","merge()","putAll()"],example:"addAll inserta todos los elementos de otra colección<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué método conserva solo los elementos comunes?",correct:"retainAll()",options:["removeAll()","retainAll()","containsAll()","filter()"],example:"retainAll obtiene la intersección entre colecciones<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué método comprueba si contiene todos los elementos de otra colección?",correct:"containsAll()",options:["contains()","containsAll()","equals()","matchAll()"],example:"containsAll verifica si una colección incluye a otra<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué método devuelve un Iterator de una colección?",correct:"iterator()",options:["getIterator()","iterator()","iterate()","forEach()"],example:"iterator() permite recorrer la colección manualmente elemento a elemento<br>· PDF Tema 4 · pág. 2"},
+{tpl:"¿Qué método comprueba si el Iterator tiene más elementos?",correct:"hasNext()",options:["hasMore()","next()","hasNext()","exists()"],example:"hasNext devuelve true mientras queden elementos por recorrer<br>· PDF Tema 4 · pág. 2"},
+{tpl:"¿Qué método devuelve el siguiente elemento del Iterator?",correct:"next()",options:["getNext()","next()","element()","fetch()"],example:"next devuelve el siguiente elemento y avanza el cursor del Iterator<br>· PDF Tema 4 · pág. 2"},
+{tpl:"¿Qué método elimina el último elemento devuelto por un Iterator?",correct:"remove()",options:["delete()","remove()","clear()","pop()"],example:"remove elimina el último elemento recorrido por el Iterator<br>· PDF Tema 4 · pág. 2"},
+{tpl:"¿Qué ocurre si se llama a next() sin hasNext()?",correct:"Puede lanzar excepción",options:["Devuelve null","Se reinicia","Puede lanzar excepción","No pasa nada"],example:"Si no hay más elementos, next lanza NoSuchElementException<br>· PDF Tema 4 · pág. 2"},
+{tpl:"¿Qué diferencia principal hay entre for-each e Iterator?",correct:"Iterator permite eliminar elementos",options:["for-each es más rápido","Iterator permite eliminar elementos","for-each no recorre","No hay diferencia"],example:"for-each no permite modificar la colección durante el recorrido<br>· PDF Tema 4 · pág. 2"},
+{tpl:"¿Qué ocurre si se elimina un elemento con for-each?",correct:"ConcurrentModificationException",options:["Se elimina","No pasa nada","ConcurrentModificationException","Se ignora"],example:"Modificar la colección durante for-each provoca una excepción<br>· PDF Tema 4 · pág. 2"},
+{tpl:"¿Qué método elimina todos los elementos de otra colección?",correct:"removeAll()",options:["clear()","remove()","removeAll()","retainAll()"],example:"removeAll elimina los elementos comunes con otra colección<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué diferencia hay entre remove y removeAll?",correct:"remove elimina un elemento, removeAll varios",options:["No hay diferencia","removeAll es más rápido","remove elimina un elemento, removeAll varios","removeAll solo borra uno"],example:"removeAll actúa sobre una colección completa<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué método comprueba igualdad de contenido entre colecciones?",correct:"equals()",options:["==","compareTo()","equals()","containsAll()"],example:"equals compara tamaño y elementos de la colección<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué interfaz NO permite elementos duplicados?",correct:"Set",options:["List","Queue","Set","Deque"],example:"Set garantiza unicidad de elementos<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿De qué depende que HashSet detecte duplicados?",correct:"equals y hashCode",options:["compareTo","toString","equals y hashCode","=="],example:"HashSet usa hashCode y equals para detectar duplicados<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué ocurre si no se sobrescribe hashCode correctamente?",correct:"Puede haber duplicados",options:["Error","Nada","Puede haber duplicados","No compila"],example:"Un hashCode incorrecto rompe el funcionamiento del HashSet<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué interfaz ordena elementos de forma natural?",correct:"SortedSet",options:["Set","SortedSet","List","Queue"],example:"SortedSet define colecciones ordenadas automáticamente<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué interfaz implementa TreeSet?",correct:"SortedSet",options:["Set","Collection","SortedSet","Navigable"],example:"TreeSet implementa SortedSet para mantener orden<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué tipo de orden usa TreeSet por defecto?",correct:"Orden natural",options:["Inserción","Aleatorio","Orden natural","Hash"],example:"TreeSet ordena usando compareTo de los elementos<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué ocurre si un objeto no es comparable en TreeSet?",correct:"Lanza excepción",options:["Se ignora","Se añade igual","Lanza excepción","Se convierte"],example:"TreeSet necesita que los elementos sean comparables<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué interfaz permite definir un comparador personalizado?",correct:"Comparator",options:["Comparable","Comparator","Iterator","Collection"],example:"Comparator permite definir reglas de orden externas<br>· PDF Tema 4 · pág. 11"},
+{tpl:"¿Qué método define el orden en Comparator?",correct:"compare()",options:["compareTo()","equals()","compare()","sort()"],example:"compare devuelve negativo, cero o positivo según el orden<br>· PDF Tema 4 · pág. 11"},
+{tpl:"¿Qué interfaz debe implementar una clase para orden natural?",correct:"Comparable",options:["Comparator","Comparable","Iterable","Sortable"],example:"Comparable define el método compareTo<br>· PDF Tema 4 · pág. 11"},
+{tpl:"¿Qué método define el orden natural?",correct:"compareTo()",options:["compare()","equals()","compareTo()","sort()"],example:"compareTo pertenece a la propia clase del objeto<br>· PDF Tema 4 · pág. 11"},
+{tpl:"¿Qué diferencia hay entre Comparable y Comparator?",correct:"Comparable es interno, Comparator externo",options:["No hay","Comparator es más antiguo","Comparable es interno, Comparator externo","Comparator ordena solo List"],example:"Comparable se implementa en la clase, Comparator es independiente<br>· PDF Tema 4 · pág. 11"},
+{tpl:"¿Qué colección es más eficiente para búsquedas rápidas?",correct:"HashSet",options:["ArrayList","LinkedList","TreeSet","HashSet"],example:"HashSet tiene acceso muy rápido gracias al hash<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué colección es mejor si necesitas orden automático?",correct:"TreeSet",options:["HashSet","LinkedHashSet","TreeSet","ArrayList"],example:"TreeSet mantiene siempre los elementos ordenados<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué colección es mejor si necesitas mantener orden de inserción sin duplicados?",correct:"LinkedHashSet",options:["HashSet","TreeSet","LinkedHashSet","List"],example:"LinkedHashSet combina unicidad y orden de inserción<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué método elimina el primer elemento en Deque?",correct:"removeFirst()",options:["remove()","removeFirst()","poll()","pop()"],example:"removeFirst elimina el primer elemento del Deque<br>· PDF Tema 4 · pág. 9"},
+{tpl:"¿Qué método elimina el último elemento en Deque?",correct:"removeLast()",options:["remove()","removeLast()","pollLast()","pop()"],example:"removeLast elimina el elemento del final del Deque<br>· PDF Tema 4 · pág. 9"},
+{tpl:"¿Qué estructura permite comportamiento de pila (LIFO)?",correct:"Deque",options:["Queue","List","Deque","Set"],example:"Deque puede comportarse como pila usando push y pop<br>· PDF Tema 4 · pág. 9"},
+{tpl:"¿Qué método añade un elemento como pila?",correct:"push()",options:["add()","offer()","push()","insert()"],example:"push añade el elemento al inicio del Deque<br>· PDF Tema 4 · pág. 9"},
+{tpl:"¿Qué método extrae un elemento como pila?",correct:"pop()",options:["remove()","poll()","pop()","get()"],example:"pop elimina y devuelve el primer elemento del Deque<br>· PDF Tema 4 · pág. 9"},
+{tpl:"¿Qué colección NO permite acceso por índice?",correct:"Set",options:["List","ArrayList","LinkedList","Set"],example:"Set no trabaja con índices numéricos<br>· PDF Tema 4 · pág. 10"},
+{tpl:"¿Qué método convierte una colección en array?",correct:"toArray()",options:["asArray()","toArray()","convert()","array()"],example:"toArray devuelve un array con los elementos de la colección<br>· PDF Tema 4 · pág. 1"},
+{tpl:"¿Qué ocurre si se modifica una colección durante un Iterator incorrectamente?",correct:"ConcurrentModificationException",options:["Nada","Se reinicia","ConcurrentModificationException","Error de compilación"],example:"Java detecta modificaciones concurrentes durante la iteración<br>· PDF Tema 4 · pág. 2"}
+
+];
+
+const ExcepcionesFicheros = [
+{tpl:"¿Qué es una excepción en Java?",correct:"Un error que ocurre durante la ejecución del programa",options:["Un error de sintaxis","Un aviso del compilador","Un error que ocurre durante la ejecución del programa","Un fallo del hardware"],example:"Una excepción interrumpe el flujo normal del programa cuando ocurre un error en tiempo de ejecución<br>· PDF Tema 5 · pág. 1"},
+{tpl:"¿Qué bloque se usa para capturar una excepción?",correct:"catch",options:["try","throw","catch","finally"],example:"El bloque catch captura y gestiona la excepción lanzada en el bloque try<br>· PDF Tema 5 · pág. 1"},
+{tpl:"¿Qué bloque contiene el código que puede provocar una excepción?",correct:"try",options:["catch","throws","try","finally"],example:"Dentro de try se coloca el código que puede generar una excepción<br>· PDF Tema 5 · pág. 1"},
+{tpl:"¿Qué bloque se ejecuta siempre haya o no excepción?",correct:"finally",options:["catch","throws","final","finally"],example:"finally se ejecuta siempre y suele usarse para liberar recursos<br>· PDF Tema 5 · pág. 1"},
+{tpl:"¿Puede existir un try sin catch?",correct:"Sí, si tiene finally",options:["No","Sí, siempre","Sí, si tiene finally","Solo con throws"],example:"Un try puede no tener catch si incluye un bloque finally<br>· PDF Tema 5 · pág. 1"},
+{tpl:"¿Puede existir un try sin finally?",correct:"Sí",options:["No","Sí","Solo con throws","Solo con catch"],example:"El bloque finally es opcional si existe al menos un catch<br>· PDF Tema 5 · pág. 1"},
+{tpl:"¿Qué palabra clave lanza una excepción manualmente?",correct:"throw",options:["throws","catch","throw","exception"],example:"throw se usa para lanzar explícitamente una excepción concreta<br>· PDF Tema 5 · pág. 2"},
+{tpl:"¿Qué palabra clave declara excepciones en un método?",correct:"throws",options:["throw","throws","catch","exception"],example:"throws indica que un método puede propagar excepciones al llamador<br>· PDF Tema 5 · pág. 2"},
+{tpl:"¿Qué tipo de excepciones debe tratarse obligatoriamente?",correct:"Checked",options:["Runtime","Unchecked","Checked","Error"],example:"Las excepciones checked deben capturarse o declararse con throws<br>· PDF Tema 5 · pág. 2"},
+{tpl:"¿Qué tipo de excepciones NO es obligatorio tratar?",correct:"Unchecked",options:["Checked","IOException","Unchecked","SQLException"],example:"Las excepciones unchecked heredan de RuntimeException<br>· PDF Tema 5 · pág. 2"},
+{tpl:"¿De qué clase heredan todas las excepciones?",correct:"Exception",options:["Throwable","Error","Exception","Runtime"],example:"Exception es la superclase de la mayoría de excepciones controlables<br>· PDF Tema 5 · pág. 2"},
+{tpl:"¿Qué clase está por encima de Exception?",correct:"Throwable",options:["Object","Error","Throwable","RuntimeException"],example:"Throwable es la raíz de la jerarquía de errores y excepciones<br>· PDF Tema 5 · pág. 2"},
+{tpl:"¿Qué excepción se produce al dividir entre cero?",correct:"ArithmeticException",options:["NullPointerException","ArithmeticException","IOException","NumberFormatException"],example:"Dividir un entero entre cero provoca ArithmeticException<br>· PDF Tema 5 · pág. 3"},
+{tpl:"¿Qué excepción se produce al acceder a un objeto null?",correct:"NullPointerException",options:["IOException","NullPointerException","ClassCastException","IndexOutOfBoundsException"],example:"Usar un objeto null sin inicializar provoca NullPointerException<br>· PDF Tema 5 · pág. 3"},
+{tpl:"¿Qué excepción se produce al convertir un String no numérico a int?",correct:"NumberFormatException",options:["ArithmeticException","IOException","NumberFormatException","ParseException"],example:"Integer.parseInt lanza NumberFormatException si el texto no es numérico<br>· PDF Tema 5 · pág. 3"},
+{tpl:"¿Qué excepción se produce al acceder fuera de un array?",correct:"ArrayIndexOutOfBoundsException",options:["IndexOutOfBoundsException","ArrayIndexOutOfBoundsException","NullPointerException","IOException"],example:"Acceder a un índice inválido del array provoca esta excepción<br>· PDF Tema 5 · pág. 3"},
+{tpl:"¿Qué excepción se produce al abrir un fichero inexistente?",correct:"FileNotFoundException",options:["IOException","FileNotFoundException","EOFException","NullPointerException"],example:"Al intentar abrir un fichero que no existe se lanza FileNotFoundException<br>· PDF Tema 5 · pág. 4"},
+{tpl:"¿Qué excepción general se usa para errores de entrada/salida?",correct:"IOException",options:["RuntimeException","IOException","FileException","InputException"],example:"IOException agrupa errores relacionados con operaciones de E/S<br>· PDF Tema 5 · pág. 4"},
+{tpl:"¿Se pueden usar varios catch con un mismo try?",correct:"Sí",options:["No","Sí","Solo uno","Solo con finally"],example:"Se pueden encadenar varios catch para tratar excepciones distintas<br>· PDF Tema 5 · pág. 1"},
+{tpl:"¿En qué orden se evalúan los catch?",correct:"De más específica a más general",options:["En cualquier orden","De más general a más específica","De más específica a más general","Por orden alfabético"],example:"Primero deben capturarse las excepciones hijas y luego las padres<br>· PDF Tema 5 · pág. 1"},
+{tpl:"¿Qué ocurre si un catch más general va antes?",correct:"Error de compilación",options:["Se ignora","Funciona igual","Error de compilación","Se ejecuta el finally"],example:"Java no permite capturar primero una excepción padre<br>· PDF Tema 5 · pág. 1"},
+{tpl:"¿Qué es una excepción personalizada?",correct:"Una clase creada por el programador",options:["Una excepción del sistema","Una clase creada por el programador","Un error fatal","Una RuntimeException"],example:"Las excepciones personalizadas heredan normalmente de Exception<br>· PDF Tema 5 · pág. 5"},
+{tpl:"¿Cómo se crea una excepción personalizada?",correct:"Extiende de Exception",options:["Implementa Error","Extiende de Throwable","Extiende de Exception","Usa throws"],example:"Para crear una excepción propia se extiende la clase Exception<br>· PDF Tema 5 · pág. 5"},
+{tpl:"¿Qué método obtiene el mensaje de la excepción?",correct:"getMessage()",options:["message()","print()","getMessage()","toString()"],example:"getMessage devuelve el texto descriptivo de la excepción<br>· PDF Tema 5 · pág. 2"},
+{tpl:"¿Qué método imprime la traza completa del error?",correct:"printStackTrace()",options:["trace()","getStack()","printStackTrace()","log()"],example:"printStackTrace muestra el recorrido de llamadas del error<br>· PDF Tema 5 · pág. 2"},
+{tpl:"¿Qué instrucción finaliza la ejecución del programa?",correct:"System.exit()",options:["exit()","stop()","System.exit()","return"],example:"System.exit finaliza la JVM indicando un código de salida<br>· PDF Tema 5 · pág. 2"},
+{tpl:"¿Qué clase se usa para leer ficheros de texto carácter a carácter?",correct:"FileReader",options:["FileWriter","BufferedReader","FileReader","Scanner"],example:"FileReader permite leer ficheros de texto carácter a carácter<br>· PDF Tema 5 · pág. 6"},
+{tpl:"¿Qué clase se usa para escribir ficheros de texto?",correct:"FileWriter",options:["FileReader","PrintWriter","FileWriter","BufferedReader"],example:"FileWriter permite escribir texto en ficheros<br>· PDF Tema 5 · pág. 6"},
+{tpl:"¿Qué clase mejora la eficiencia de lectura de texto?",correct:"BufferedReader",options:["FileReader","Scanner","BufferedReader","InputStream"],example:"BufferedReader lee bloques grandes para mejorar el rendimiento<br>· PDF Tema 5 · pág. 6"},
+{tpl:"¿Qué método lee una línea completa de texto?",correct:"readLine()",options:["read()","nextLine()","readLine()","getLine()"],example:"readLine lee una línea completa hasta el salto de línea<br>· PDF Tema 5 · pág. 6"},
+{tpl:"¿Qué método escribe texto y salto de línea?",correct:"println()",options:["print()","write()","println()","append()"],example:"println escribe texto y añade un salto de línea automáticamente<br>· PDF Tema 5 · pág. 6"},
+{tpl:"¿Qué clase permite escribir texto de forma sencilla?",correct:"PrintWriter",options:["FileWriter","BufferedWriter","PrintWriter","OutputStream"],example:"PrintWriter facilita la escritura de texto con métodos print y println<br>· PDF Tema 5 · pág. 6"},
+{tpl:"¿Qué clase se usa para leer desde teclado y ficheros?",correct:"Scanner",options:["Reader","Scanner","Input","BufferedReader"],example:"Scanner permite leer datos formateados desde distintas fuentes<br>· PDF Tema 5 · pág. 7"},
+{tpl:"¿Qué método de Scanner lee una línea completa?",correct:"nextLine()",options:["next()","readLine()","nextLine()","scan()"],example:"nextLine lee una línea completa como String<br>· PDF Tema 5 · pág. 7"},
+{tpl:"¿Qué método de Scanner lee un entero?",correct:"nextInt()",options:["getInt()","readInt()","nextInt()","parseInt()"],example:"nextInt lee un número entero desde la entrada<br>· PDF Tema 5 · pág. 7"},
+{tpl:"¿Qué excepción puede lanzar Scanner al leer un tipo incorrecto?",correct:"InputMismatchException",options:["IOException","NumberFormatException","InputMismatchException","ParseException"],example:"Scanner lanza InputMismatchException si el tipo no coincide<br>· PDF Tema 5 · pág. 7"},
+{tpl:"¿Qué bloque asegura el cierre de ficheros?",correct:"finally",options:["catch","throws","finally","close"],example:"finally se usa para cerrar ficheros aunque ocurra una excepción<br>· PDF Tema 5 · pág. 6"},
+{tpl:"¿Qué método cierra un flujo de datos?",correct:"close()",options:["end()","stop()","close()","finish()"],example:"close libera los recursos asociados al fichero o flujo<br>· PDF Tema 5 · pág. 6"},
+{tpl:"¿Qué ocurre si no se cierra un fichero?",correct:"Fuga de recursos",options:["Nada","Error de compilación","Fuga de recursos","Se cierra solo"],example:"No cerrar ficheros puede provocar consumo innecesario de recursos<br>· PDF Tema 5 · pág. 6"},
+{tpl:"¿Qué estructura permite cerrar recursos automáticamente?",correct:"try-with-resources",options:["try-finally","auto-close","try-with-resources","resource-block"],example:"try-with-resources cierra automáticamente los recursos al finalizar<br>· PDF Tema 5 · pág. 8"},
+{tpl:"¿Desde qué versión existe try-with-resources?",correct:"Java 7",options:["Java 5","Java 6","Java 7","Java 8"],example:"try-with-resources se introdujo en Java 7<br>· PDF Tema 5 · pág. 8"}
+];
+
+// BBDD NO ENTRA EN EL EXAMEN
+/* 
+const BBDD = [
+{tpl:"¿Qué es una base de datos orientada a objetos?",correct:"Una base de datos que almacena objetos directamente",options:["Una base de datos relacional","Una base de datos que almacena tablas","Una base de datos que almacena objetos directamente","Un fichero de texto"],example:"Las BBDD OO permiten persistir objetos sin transformarlos a tablas<br>· PDF Tema 6 · pág. 1"},
+{tpl:"¿Qué es db4o?",correct:"Una base de datos orientada a objetos para Java",options:["Un gestor relacional","Un ORM","Una base de datos orientada a objetos para Java","Un framework web"],example:"db4o permite almacenar objetos Java de forma nativa<br>· PDF Tema 6 · pág. 1"},
+{tpl:"¿Qué significa persistencia?",correct:"Almacenar datos de forma permanente",options:["Guardar en memoria","Almacenar datos de forma permanente","Enviar por red","Mostrar por pantalla"],example:"La persistencia mantiene los datos aunque el programa finalice<br>· PDF Tema 6 · pág. 1"},
+{tpl:"¿Qué tipo de fichero usa db4o?",correct:"Un fichero .db4o",options:[".sql",".db",".db4o",".txt"],example:"db4o guarda los objetos en un único fichero binario<br>· PDF Tema 6 · pág. 2"},
+{tpl:"¿Qué clase permite abrir una base de datos db4o?",correct:"ObjectContainer",options:["Db4o","ObjectSet","ObjectContainer","Database"],example:"ObjectContainer representa la conexión con la base de datos<br>· PDF Tema 6 · pág. 2"},
+{tpl:"¿Qué método abre una base de datos db4o?",correct:"Db4oEmbedded.openFile()",options:["openDB()","openFile()","Db4oEmbedded.openFile()","connect()"],example:"openFile abre o crea el fichero de base de datos<br>· PDF Tema 6 · pág. 2"},
+{tpl:"¿Qué método cierra la base de datos db4o?",correct:"close()",options:["end()","stop()","close()","finish()"],example:"close libera recursos y guarda los cambios<br>· PDF Tema 6 · pág. 2"},
+{tpl:"¿Qué ocurre si no se cierra la base de datos?",correct:"Pueden perderse datos",options:["Nada","Se cierra sola","Pueden perderse datos","Error de compilación"],example:"No cerrar la base puede provocar pérdida de persistencia<br>· PDF Tema 6 · pág. 2"},
+{tpl:"¿Qué método almacena un objeto en db4o?",correct:"store()",options:["save()","insert()","store()","persist()"],example:"store guarda el objeto completo en la base de datos<br>· PDF Tema 6 · pág. 3"},
+{tpl:"¿Qué método confirma los cambios en db4o?",correct:"commit()",options:["save()","commit()","flush()","apply()"],example:"commit confirma las operaciones realizadas<br>· PDF Tema 6 · pág. 3"},
+{tpl:"¿Qué método revierte los cambios no confirmados?",correct:"rollback()",options:["undo()","rollback()","reset()","cancel()"],example:"rollback deshace cambios no confirmados<br>· PDF Tema 6 · pág. 3"},
+{tpl:"¿Qué método elimina un objeto de la base de datos?",correct:"delete()",options:["remove()","delete()","erase()","drop()"],example:"delete elimina el objeto persistido<br>· PDF Tema 6 · pág. 3"},
+{tpl:"¿Qué clase representa el resultado de una consulta?",correct:"ObjectSet",options:["ResultSet","List","ObjectSet","Collection"],example:"ObjectSet contiene los objetos devueltos por una consulta<br>· PDF Tema 6 · pág. 4"},
+{tpl:"¿Qué método comprueba si hay más resultados?",correct:"hasNext()",options:["exists()","hasNext()","next()","size()"],example:"hasNext indica si quedan objetos por recorrer<br>· PDF Tema 6 · pág. 4"},
+{tpl:"¿Qué método obtiene el siguiente objeto del resultado?",correct:"next()",options:["get()","fetch()","next()","read()"],example:"next devuelve el siguiente objeto del ObjectSet<br>· PDF Tema 6 · pág. 4"},
+{tpl:"¿Qué tipo de consulta busca por ejemplo de objeto?",correct:"Query By Example",options:["SQL","Query By Example","Native Query","OQL"],example:"QBE busca objetos usando un ejemplo parcial<br>· PDF Tema 6 · pág. 4"},
+{tpl:"¿Qué valor se usa en QBE para ignorar un atributo?",correct:"null",options:["0","*","null","-1"],example:"Los atributos a null no se tienen en cuenta en la búsqueda<br>· PDF Tema 6 · pág. 4"},
+{tpl:"¿Qué tipo de consulta usa predicados Java?",correct:"Native Query",options:["SQL","QBE","Native Query","XPath"],example:"Native Query permite usar expresiones Java como filtro<br>· PDF Tema 6 · pág. 5"},
+{tpl:"¿Qué ventaja tiene Native Query?",correct:"Es más expresiva",options:["Más rápida siempre","Usa SQL","Es más expresiva","No necesita clases"],example:"Permite condiciones complejas usando código Java<br>· PDF Tema 6 · pág. 5"},
+{tpl:"¿Qué inconveniente tiene Native Query?",correct:"Menor rendimiento",options:["No funciona","Menor rendimiento","No devuelve objetos","Es obligatoria"],example:"Puede ser más lenta que otras consultas<br>· PDF Tema 6 · pág. 5"},
+{tpl:"¿Qué ocurre si se modifica un objeto recuperado?",correct:"Se actualiza automáticamente",options:["No pasa nada","Se pierde","Se actualiza automáticamente","Da error"],example:"db4o trabaja con objetos vivos en memoria<br>· PDF Tema 6 · pág. 3"},
+{tpl:"¿Qué concepto evita duplicar datos en db4o?",correct:"Identidad de objetos",options:["Clave primaria","ID manual","Identidad de objetos","Índice"],example:"db4o mantiene la identidad del objeto persistido<br>· PDF Tema 6 · pág. 1"},
+{tpl:"¿Qué tipo de base de datos es db4o?",correct:"Embebida",options:["Cliente-servidor","Distribuida","Embebida","En la nube"],example:"db4o se integra directamente en la aplicación Java<br>· PDF Tema 6 · pág. 1"},
+{tpl:"¿Qué clase permite crear consultas avanzadas?",correct:"Query",options:["Query","Search","Find","ObjectSet"],example:"Query permite construir consultas programáticamente<br>· PDF Tema 6 · pág. 5"},
+{tpl:"¿Qué método ejecuta una Query?",correct:"execute()",options:["run()","execute()","query()","search()"],example:"execute devuelve un ObjectSet con los resultados<br>· PDF Tema 6 · pág. 5"},
+{tpl:"¿Qué método limita resultados en Query?",correct:"constrain()",options:["limit()","where()","constrain()","filter()"],example:"constrain añade condiciones a la consulta<br>· PDF Tema 6 · pág. 5"},
+{tpl:"¿Qué ocurre si se elimina un objeto con referencias?",correct:"Las referencias permanecen",options:["Se borran en cascada","Da error","Las referencias permanecen","Se borra todo"],example:"db4o no elimina automáticamente referencias relacionadas<br>· PDF Tema 6 · pág. 6"},
+{tpl:"¿Qué método permite recuperar todos los objetos de una clase?",correct:"queryByExample()",options:["findAll()","selectAll()","queryByExample()","getAll()"],example:"Pasando un objeto vacío se obtienen todos los objetos de esa clase<br>· PDF Tema 6 · pág. 4"},
+{tpl:"¿Qué ocurre si se llama a commit sin cambios?",correct:"No ocurre nada",options:["Error","Rollback","No ocurre nada","Se borra la BD"],example:"commit sin cambios no altera la base de datos<br>· PDF Tema 6 · pág. 3"},
+{tpl:"¿Qué ventaja tiene db4o frente a bases relacionales?",correct:"No necesita mapeo objeto-relacional",options:["Usa SQL","Mayor complejidad","No necesita mapeo objeto-relacional","Más pesada"],example:"db4o evita el uso de ORM<br>· PDF Tema 6 · pág. 1"},
+{tpl:"¿Qué desventaja principal tiene db4o?",correct:"No es estándar",options:["Muy lenta","No guarda datos","No es estándar","No usa objetos"],example:"db4o no es un estándar como SQL<br>· PDF Tema 6 · pág. 1"},
+{tpl:"¿Qué ocurre si se guarda dos veces el mismo objeto?",correct:"Se actualiza",options:["Se duplica","Error","Se actualiza","Se ignora"],example:"db4o detecta la identidad del objeto<br>· PDF Tema 6 · pág. 3"},
+{tpl:"¿Qué estructura se recomienda para cerrar db4o?",correct:"try-finally",options:["if","try-catch","try-finally","synchronized"],example:"try-finally garantiza el cierre de la base de datos<br>· PDF Tema 6 · pág. 2"},
+{tpl:"¿Qué método devuelve el número de resultados?",correct:"size()",options:["count()","length()","size()","total()"],example:"size devuelve cuántos objetos hay en el ObjectSet<br>· PDF Tema 6 · pág. 4"},
+{tpl:"¿Qué ocurre si se usa rollback?",correct:"Se deshacen los cambios",options:["Se confirman","Se pierden datos","Se deshacen los cambios","No ocurre nada"],example:"rollback restaura el estado anterior al commit<br>· PDF Tema 6 · pág. 3"}
+];
+ */
+
+
+const pasiveVoice = [
+{ tpl:"The documents _____ (sign) by the manager before submission.", correct:"were signed", options:["signs","were signed","is signed","will sign"], example:"Past Simple Passive — action completed in the past by someone." },
+{ tpl:"The website _____ (update) every Friday.", correct:"is updated", options:["updates","is updated","was updated","will be updated"], example:"Present Simple Passive — habitual action done to the subject." },
+{ tpl:"The new software _____ (install) on all computers next week.", correct:"will be installed", options:["is installed","will be installed","has been installed","was installed"], example:"Future Simple Passive — planned action for the future." },
+{ tpl:"How _____ (repair) the network if it goes down?", correct:"is repaired", options:["is repaired","repairs","was repaired","will repair"], example:"Present Simple Passive — asking how an action is performed generally." },
+{ tpl:"The annual report _____ (complete) by the finance team yesterday.", correct:"was completed", options:["completes","was completed","is completed","will be completed"], example:"Past Simple Passive — action finished at a specific past time." },
+{ tpl:"The emails _____ (send) every morning to all staff.", correct:"are sent", options:["sends","are sent","was sent","will be sent"], example:"Present Simple Passive — repeated action done to the subject." },
+{ tpl:"The database _____ (backup) regularly to avoid data loss.", correct:"is backed up", options:["is backed up","backs up","was backed up","will back up"], example:"Present Simple Passive — habitual maintenance action." },
+{ tpl:"The password _____ (change) by the IT department last week.", correct:"was changed", options:["changes","was changed","is changed","will be changed"], example:"Past Simple Passive — completed past action." },
+{ tpl:"The contract _____ (sign) by the CEO tomorrow.", correct:"will be signed", options:["will be signed","is signed","was signed","signs"], example:"Future Simple Passive — planned action." },
+{ tpl:"The system _____ (test) thoroughly before launch.", correct:"is tested", options:["is tested","tests","was tested","will test"], example:"Present Simple Passive — general fact or procedure." },
+{ tpl:"The server _____ (restart) every Sunday night.", correct:"is restarted", options:["is restarted","restarts","was restarted","will restart"], example:"Present Simple Passive — habitual action." },
+{ tpl:"The report _____ (print) yesterday afternoon.", correct:"was printed", options:["prints","was printed","is printed","will print"], example:"Past Simple Passive — finished past action." },
+{ tpl:"The new policy _____ (introduce) next Monday.", correct:"will be introduced", options:["will be introduced","is introduced","was introduced","introduces"], example:"Future Simple Passive — scheduled future action." },
+{ tpl:"The network _____ (monitor) constantly for security issues.", correct:"is monitored", options:["is monitored","monitors","was monitored","will monitor"], example:"Present Simple Passive — ongoing action." },
+{ tpl:"The invoices _____ (send) to clients last Friday.", correct:"were sent", options:["send","were sent","is sent","will send"], example:"Past Simple Passive — completed action at a specific past time." },
+{ tpl:"The new feature _____ (deploy) by the developers tomorrow.", correct:"will be deployed", options:["is deployed","was deployed","will be deployed","deploys"], example:"Future Simple Passive — planned deployment." },
+{ tpl:"How _____ (resolve) network issues in your team?", correct:"are resolved", options:["are resolved","resolve","were resolved","will resolve"], example:"Present Simple Passive — general procedure question." },
+{ tpl:"The client request _____ (handle) immediately by the support team.", correct:"is handled", options:["is handled","handles","was handled","will handle"], example:"Present Simple Passive — standard operating procedure." },
+{ tpl:"The tickets _____ (close) yesterday by the IT support.", correct:"were closed", options:["are closed","were closed","is closed","will close"], example:"Past Simple Passive — action completed in the past." },
+{ tpl:"The application _____ (update) regularly to fix bugs.", correct:"is updated", options:["updates","is updated","was updated","will update"], example:"Present Simple Passive — routine maintenance." },
+{ tpl:"The server logs _____ (review) by the admin team daily.", correct:"are reviewed", options:["are reviewed","reviews","was reviewed","will review"], example:"Present Simple Passive — habitual review process." },
+{ tpl:"The tickets _____ (assign) by the manager last week.", correct:"were assigned", options:["is assigned","was assigned","assigns","will assign"], example:"Past Simple Passive — finished action." },
+{ tpl:"The code _____ (check) before deployment.", correct:"is checked", options:["is checked","checks","was checked","will check"], example:"Present Simple Passive — standard procedure." },
+{ tpl:"The meeting _____ (schedule) for next Tuesday.", correct:"will be scheduled", options:["is scheduled","was scheduled","will be scheduled","schedules"], example:"Future Simple Passive — future plan." },
+{ tpl:"The user feedback _____ (consider) carefully by the product team.", correct:"is considered", options:["is considered","considers","was considered","will consider"], example:"Present Simple Passive — current practice." },
+{ tpl:"The configuration files _____ (backup) yesterday by the admin.", correct:"were backed up", options:["are backed up","were backed up","is backed up","will back up"], example:"Past Simple Passive — completed past action." }
+]
+
+const causative = [
+{ tpl:"I had the designer _____ (create) a new logo for the campaign.", correct:"create", options:["creates","creating","create","created"], example:"Causative — have + object + base verb." },
+{ tpl:"She made her assistant _____ (organize) the files correctly.", correct:"organize", options:["organizes","organize","organizing","organized"], example:"Causative — make + object + base verb." },
+{ tpl:"We will have the contractor _____ (repair) the broken fence tomorrow.", correct:"repair", options:["repairs","repair","repaired","repairing"], example:"Causative — future have + object + base verb." },
+{ tpl:"He had the team _____ (prepare) the presentation before the meeting.", correct:"prepare", options:["prepares","preparing","prepare","prepared"], example:"Causative — past have + object + base verb." },
+{ tpl:"The manager made the interns _____ (write) the report again.", correct:"write", options:["writes","write","writing","written"], example:"Causative — make + object + base verb." },
+{ tpl:"I had the technician _____ (fix) the network issues yesterday.", correct:"fix", options:["fixes","fix","fixing","fixed"], example:"Causative — past have + object + base verb." },
+{ tpl:"She made the staff _____ (attend) the training session.", correct:"attend", options:["attends","attend","attending","attended"], example:"Causative — make + object + base verb." },
+{ tpl:"We will have the company _____ (deliver) the equipment tomorrow.", correct:"deliver", options:["delivers","deliver","delivered","delivering"], example:"Causative — future have + object + base verb." },
+{ tpl:"The supervisor had the team _____ (update) the software.", correct:"update", options:["updates","update","updated","updating"], example:"Causative — past have + object + base verb." },
+{ tpl:"He made his assistant _____ (schedule) the meetings for next week.", correct:"schedule", options:["schedules","schedule","scheduled","scheduling"], example:"Causative — make + object + base verb." },
+{ tpl:"I had the developer _____ (fix) the bug in the code.", correct:"fix", options:["fixes","fix","fixed","fixing"], example:"Causative — have + object + base verb." },
+{ tpl:"She made the intern _____ (call) the client immediately.", correct:"call", options:["calls","call","calling","called"], example:"Causative — make + object + base verb." },
+{ tpl:"We will have the engineer _____ (configure) the server.", correct:"configure", options:["configures","configure","configured","configuring"], example:"Causative — future have + object + base verb." },
+{ tpl:"The manager had the assistant _____ (review) the document.", correct:"review", options:["reviews","review","reviewed","reviewing"], example:"Causative — past have + object + base verb." },
+{ tpl:"He made the staff _____ (clean) the office before the meeting.", correct:"clean", options:["cleans","clean","cleaned","cleaning"], example:"Causative — make + object + base verb." },
+{ tpl:"I had the team _____ (prepare) the presentation slides.", correct:"prepare", options:["prepares","prepare","prepared","preparing"], example:"Causative — have + object + base verb." },
+{ tpl:"She made the interns _____ (submit) their homework on time.", correct:"submit", options:["submits","submit","submitted","submitting"], example:"Causative — make + object + base verb." },
+{ tpl:"We will have the company _____ (install) the new equipment.", correct:"install", options:["installs","install","installed","installing"], example:"Causative — future have + object + base verb." },
+{ tpl:"The supervisor had the staff _____ (check) the database.", correct:"check", options:["checks","check","checked","checking"], example:"Causative — past have + object + base verb." },
+{ tpl:"He made his assistant _____ (send) the emails immediately.", correct:"send", options:["sends","send","sent","sending"], example:"Causative — make + object + base verb." },
+{ tpl:"I had the technician _____ (replace) the faulty hardware.", correct:"replace", options:["replaces","replace","replaced","replacing"], example:"Causative — have + object + base verb." },
+{ tpl:"She made the team _____ (submit) the report before deadline.", correct:"submit", options:["submits","submit","submitted","submitting"], example:"Causative — make + object + base verb." },
+{ tpl:"We will have the staff _____ (organize) the files properly.", correct:"organize", options:["organizes","organize","organized","organizing"], example:"Causative — future have + object + base verb." },
+{ tpl:"The manager had the intern _____ (prepare) the meeting notes.", correct:"prepare", options:["prepares","prepare","prepared","preparing"], example:"Causative — past have + object + base verb." },
+{ tpl:"He made the staff _____ (update) the presentation slides.", correct:"update", options:["updates","update","updated","updating"], example:"Causative — make + object + base verb." }
+]
+
+const relative = [
+  { tpl:"My colleague, _____ I worked with on the project, has left the company.", correct:"whom", options:["who","whose","which","whom"], example:"Se refiere a una PERSONA y es OBJETO del verbo (I worked with him).<br>WHO = sujeto ❌ / WHOM = objeto ✅" },
+  { tpl:"The system, _____ the developers are currently working on, will be launched next month.", correct:"which", options:["who","which","whose","whom"], example:"Se refiere a una COSA (system) y es OBJETO del verbo.<br>Para cosas se usa WHICH." },
+  { tpl:"The consultant _____ we spoke to was very knowledgeable about the latest technology trends.", correct:"who", options:["which","whom","whose","who"], example:"Se refiere a una PERSONA que realiza la acción principal.<br>WHO funciona como sujeto de la oración relativa." },
+  { tpl:"The book, _____ I borrowed from the library, is on the desk.", correct:"which", options:["who","which","whose","whom"], example:"Se refiere a una COSA (book).<br>WHO / WHOM solo son para personas." },
+  { tpl:"The city __________ she grew up is known for its historical landmarks.", correct:"where", options:["which","where","who","whose"], example:"Se habla de un LUGAR y de localización.<br>WHERE indica lugar, no sujeto u objeto." },
+  { tpl:"The programmer ___ fixed the bug is very skilled.", correct:"who", options:["who","whose","which","whom"], example:"WHO es el SUJETO del verbo fixed.<br>WHOM sería objeto, aquí no encaja." },
+  { tpl:"The girl _________ boyfriend is shorter than her is my new neighbour.", correct:"whose", options:["whose","who","that","which"], example:"Se expresa POSESIÓN (boyfriend de la girl).<br>WHO no indica posesión." },
+  { tpl:"The company, _____ headquarters are in London, expanded rapidly.", correct:"whose", options:["whose","who","which","whom"], example:"POSESIÓN (headquarters pertenecen a la company).<br>WHICH no expresa posesión." },
+  { tpl:"The movie, _____ I watched last night, was fantastic.", correct:"which", options:["who","which","whose","whom"], example:"Se refiere a una COSA (movie).<br>WHICH es el relativo correcto para objetos." },
+  { tpl:"The teacher _____ teaches English is very patient.", correct:"who", options:["who","whom","which","whose"], example:"La persona realiza la acción (teaches).<br>WHO = sujeto del verbo." },
+  { tpl:"The restaurant _____ we had dinner at was very expensive.", correct:"which", options:["who","which","whose","whom"], example:"Se refiere a un LUGAR como cosa, no a una persona.<br>WHICH es correcto." },
+  { tpl:"The student, _____ essay won the competition, is very talented.", correct:"whose", options:["whose","who","which","whom"], example:"POSESIÓN (essay del student).<br>WHO no puede indicar posesión." },
+  { tpl:"I met a scientist _____ work focuses on AI.", correct:"whose", options:["who","whose","which","whom"], example:"POSESIÓN (work pertenece al scientist).<br>WHICH no sirve para personas." },
+  { tpl:"The bookshop _____ sells rare books is on Main Street.", correct:"that", options:["who","that","where","whose"], example:"Se refiere a una COSA y es SUJETO.<br>THAT es válido en relativas definidas." },
+  { tpl:"The house, _____ roof was damaged, needs repair.", correct:"whose", options:["who","whose","which","whom"], example:"POSESIÓN (roof de la house).<br>WHICH no expresa posesión." },
+  { tpl:"The concert _____ we attended was amazing.", correct:"which", options:["who","which","whose","whom"], example:"Se refiere a un EVENTO / cosa.<br>WHICH es el relativo correcto." },
+  { tpl:"The artist _____ paintings you like is from Spain.", correct:"whose", options:["who","whose","which","whom"], example:"POSESIÓN (paintings del artist).<br>WHO no indica posesión." },
+  { tpl:"The actor _____ won the award is very famous.", correct:"who", options:["who","whose","which","whom"], example:"La persona realiza la acción (won).<br>WHO = sujeto." },
+  { tpl:"The software, _____ we installed yesterday, works perfectly.", correct:"which", options:["who","which","whose","whom"], example:"Se refiere a una COSA (software).<br>WHICH es obligatorio." },
+  { tpl:"The engineer _____ designed the bridge is retiring.", correct:"who", options:["who","whose","which","whom"], example:"La persona realiza la acción (designed).<br>WHO = sujeto." },
+  { tpl:"The village _____ we visited is near the mountains.", correct:"which", options:["who","which","whose","whom"], example:"Lugar tratado como COSA visitada.<br>WHICH es correcto." },
+  { tpl:"The student _____ I helped passed the exam.", correct:"whom", options:["whom","whose","which","where"], example:"La persona es OBJETO (I helped him).<br>WHOM = objeto." },
+  { tpl:"The author _____ book became a bestseller is speaking tonight.", correct:"whose", options:["who","whose","which","whom"], example:"POSESIÓN (book del author).<br>WHO no expresa posesión." },
+  { tpl:"The car, _____ engine was replaced, runs smoothly.", correct:"whose", options:["who","whose","which","whom"], example:"POSESIÓN (engine del car).<br>WHICH no indica posesión." },
+  { tpl:"The laptop _____ I bought last week is very fast.", correct:"which", options:["who","which","whose","whom"], example:"Se refiere a una COSA comprada.<br>WHICH es correcto." },
+  { tpl:"The engineer _____ we met yesterday is working on the new project.", correct:"whom", options:["where","whom","whose","which"], example:"La persona es OBJETO (we met him).<br>WHOM = objeto." }
+];
+
+const phrasalVerbs = [
+{ tpl:"The team decided to _____ the problem using past experiences.", correct:"back into", options:["back into","boot off","hack on","link on"], example:"Use 'back into' to approach a problem using past knowledge." },
+{ tpl:"She tried to _____ the previous data to solve the issue quickly.", correct:"back into", options:["back into","boot off","hack on","link on"], example:"Use 'back into' for problem-solving with past info." },
+{ tpl:"We need to _____ the figures to understand the pattern.", correct:"back into", options:["back into","boot off","hack on","link on"], example:"'Back into' means deducing something using previous information." },
+
+{ tpl:"The IT department will _____ all unauthorized users.", correct:"boot off", options:["boot off","hack on","link on","log off"], example:"'Boot off' means forcefully removing someone from a system." },
+{ tpl:"They had to _____ the intruder from the server immediately.", correct:"boot off", options:["boot off","hack on","link on","log off"], example:"'Boot off' is to eject unauthorized access." },
+{ tpl:"If someone violates the rules, the admin can _____ them remotely.", correct:"boot off", options:["boot off","hack on","link on","log off"], example:"'Boot off' indicates forcing removal from a system." },
+
+{ tpl:"The developers continued to _____ the software until it was stable.", correct:"hack on", options:["hack on","link on","log up","log off"], example:"'Hack on' means to work persistently on something." },
+{ tpl:"He decided to _____ the project late into the night to meet the deadline.", correct:"hack on", options:["hack on","link on","log up","log off"], example:"Use 'hack on' for persistent effort on a task." },
+{ tpl:"They spent the whole afternoon _____ the code to fix all bugs.", correct:"hack on", options:["hack on","link on","log up","log off"], example:"'Hack on' conveys continuous work on a problem." },
+
+{ tpl:"Let’s _____ the new module to the existing software.", correct:"link on", options:["link on","log up","log off","hack on"], example:"'Link on' is to connect or integrate a system/module." },
+{ tpl:"We need to _____ the payment system with the new database.", correct:"link on", options:["link on","log up","log off","hack on"], example:"Use 'link on' to indicate connecting systems." },
+{ tpl:"They tried to _____ the user accounts to the central authentication system.", correct:"link on", options:["link on","log up","log off","hack on"], example:"'Link on' means integrate one module with another." },
+
+{ tpl:"Employees are required to _____ their overtime hours.", correct:"log up", options:["log up","log off","boot off","hack on"], example:"'Log up' means to record or write in a log." },
+{ tpl:"Please _____ any issues you notice during the audit.", correct:"log up", options:["log up","log off","boot off","hack on"], example:"'Log up' is used for recording information." },
+{ tpl:"Make sure to _____ your tasks completed each day in the system.", correct:"log up", options:["log up","log off","boot off","hack on"], example:"'Log up' is to write down in a register or log." },
+
+{ tpl:"Remember to _____ your computer to ensure data security.", correct:"log off", options:["log off","log up","boot off","hack on"], example:"'Log off' means signing out or closing a session." },
+{ tpl:"Before leaving the office, don't forget to _____ your workstation.", correct:"log off", options:["log off","log up","boot off","hack on"], example:"Use 'log off' when ending a session." },
+{ tpl:"It's important to _____ from all shared accounts after use.", correct:"log off", options:["log off","log up","boot off","hack on"], example:"'Log off' is the action of closing your session." }
+]
+
+
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+/* ======= STATS GLOBALES ======= */
+
+
+const keywords = [
+    "abstract","assert","boolean","break","byte",
+    "case","catch","char","class","const",
+    "continue","default","do","double","else",
+    "enum","extends","final","finally","float",
+    "for","goto","if","implements","import",
+    "instanceof","int","interface","long","native",
+    "new","package","private","protected","public",
+    "return","short","static","strictfp","super",
+    "switch","synchronized","this","throw","throws",
+    "transient","try","void","volatile","while"
+  ];
+
+  const codeBlocks = document.querySelectorAll('table code');
+
+  codeBlocks.forEach(block => {
+    let html = block.textContent;
+
+    // strings
+    html = html.replace(/(".*?")/g, '<span class="string">$1</span>');
+
+    // comentarios //
+    html = html.replace(/(\/\/.*)/g, '<span class="comment">$1</span>');
+
+    // números
+    html = html.replace(/\b(\d+)\b/g, '<span class="number">$1</span>');
+
+    // keywords
+    keywords.forEach(kw => {
+      const regex = new RegExp('\\b' + kw + '\\b', 'g');
+      html = html.replace(regex, `<span class="keyword">${kw}</span>`);
+    });
+
+    // tipos / clases
+    html = html.replace(
+      /\b([A-Z][a-zA-Z0-9_]*)\b/g,
+      '<span class="type">$1</span>'
+    );
+
+    // métodos
+    html = html.replace(
+      /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*(?=\()/g,
+      '<span class="method">$1</span>'
+    );
+
+    block.innerHTML = html;
+  });
+});
+/* ----------------- initPractice (encapsulado y sin IDs globales) ----------------- */
+function initPractice(rootElem, templates, opts = {}) {
+function updateRemaining() {
+  remainingNode.textContent = `Quedan: ${pool.length} preguntas`;
+}
+function initPool() {
+  pool = rnd([...templates]);
+  updateRemaining(); // 🔥 NUEVO
+}
+  const cfg = Object.assign({ defaultCount: 5, maxWidthSelect: 220, title: 'Practice' }, opts);
+
+  const rnd = arr => arr.sort(() => Math.random() - 0.5);
+
+  // limpiar
+  rootElem.innerHTML = '';
+  rootElem.style.background = '#0c0d12';
+  rootElem.style.border = '1px solid #161820';
+  rootElem.style.padding = '12px';
+  rootElem.style.borderRadius = '8px';
+
+  // título
+  const h3 = document.createElement('h3');
+  h3.textContent = cfg.title;
+  h3.style.color = '#90caf9';
+  rootElem.appendChild(h3);
+
+  const wrapper = document.createElement('div');
+  rootElem.appendChild(wrapper);
+
+  // controles
+  const controls = document.createElement('div');
+  controls.style.display = 'flex';
+  controls.style.gap = '8px';
+  controls.style.marginTop = '12px';
+
+  const btnRefresh = document.createElement('button');
+  btnRefresh.type = 'button';
+  btnRefresh.textContent = '🔁 Refresh';
+
+  const btnCheck = document.createElement('button');
+  btnCheck.type = 'button';
+  btnCheck.textContent = '✅ Correct';
+
+  const inputCount = document.createElement('input');
+  inputCount.type = 'number';
+  inputCount.value = cfg.defaultCount;
+  inputCount.style.width = '60px';
+
+  const btnApply = document.createElement('button');
+  btnApply.type = 'button';
+  btnApply.textContent = 'Apply';
+
+  const resultNode = document.createElement('span');
+  resultNode.style.marginLeft = '12px';
+  resultNode.style.fontWeight = '500';
+const remainingNode = document.createElement('span');
+remainingNode.style.marginLeft = '12px';
+remainingNode.style.color = '#9aa7b2';
+remainingNode.style.fontWeight = '600';
+controls.append(btnRefresh, btnCheck, inputCount, btnApply, resultNode, remainingNode);
+  rootElem.appendChild(controls);
+
+  // feedback
+  const feedback = document.createElement('div');
+  feedback.style.display = 'none';
+  feedback.style.marginTop = '16px';
+  feedback.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Question</th>
+          <th>Your answer</th>
+          <th>Correct answer</th>
+          <th>Explanation</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  `;
+  const feedbackBody = feedback.querySelector('tbody');
+  rootElem.appendChild(feedback);
+
+  let currentList = [];
+  let pool = []; // preguntas pendientes (no repetidas)
+function render(list) {
+  wrapper.innerHTML = '';
+  feedback.style.display = 'none';
+  feedbackBody.innerHTML = '';
+  resultNode.textContent = '';
+
+  list.forEach((ex, idx) => {
+    const card = document.createElement('div');
+    card.style.marginBottom = '14px';
+    card.style.padding = '10px';
+    card.style.border = '1px solid #1a2229';
+    card.style.borderRadius = '6px';
+    card.style.background = '#0f1419';
+
+    const question = document.createElement('div');
+    question.style.marginBottom = '6px';
+
+    const num = document.createElement('strong');
+    num.textContent = (idx + 1) + '. ';
+
+   const text = document.createElement('span');
+
+const blankMatch = ex.tpl.match(/_{2,}/); // 2 o más _
+const hasBlank = !!blankMatch;
+if (hasBlank) {
+  text.innerHTML = ex.tpl.replace(
+  /_{2,}/,
+  `<span class="blank" data-answer="">${blankMatch[0]}</span>`
+);
+} else {
+  text.textContent = ex.tpl;
+}
+question.append(num, text);
+card.appendChild(question); // 🔥 MUY IMPORTANTE: meterlo antes
+
+const select = document.createElement('select');
+select.style.width = '100%';
+select.style.marginTop = '6px';
+
+if (hasBlank) {
+  // 🔑 ahora SÍ existe en el DOM
+  const blank = question.querySelector('.blank');
+
+  select._blank = blank;
+
+select.addEventListener('change', e => {
+  const value = e.target.value;
+
+  if (value) {
+    blank.textContent = value;
+    blank.classList.add('filled');   // 🔵 azul
+  } else {
+    blank.textContent = blankMatch[0];
+    blank.classList.remove('filled'); // ⚪ vuelve a blanco
+  }
+
+  blank.dataset.answer = value;
+});
+}
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    placeholder.textContent = '— Choose —';
+    select.appendChild(placeholder);
+
+    rnd([...ex.options]).forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      select.appendChild(opt);
+    });
+
+    card.append(question, select);
+    wrapper.appendChild(card);
+  });
+}
+
+function correct() {
+  let score = 0;
+  feedbackBody.innerHTML = '';
+
+  const rows = wrapper.querySelectorAll('select');
+
+  rows.forEach((select, idx) => {
+let chosen;
+
+
+if (select._blank) {
+  chosen = select._blank.dataset.answer || '';
+} else {
+  chosen = select.value;
+}
+    const correct = currentList[idx].correct;
+    const explanation = currentList[idx].example || '';
+
+    const ok = chosen === correct;
+    if (ok) {
+      score++;
+    } else {
+      addGlobalError(
+        cfg.title,
+        currentList[idx].tpl,
+        correct,
+        explanation
+      );
+    }
+
+    select.disabled = true;
+
+    const tr = document.createElement('tr');
+
+    const tdQ = document.createElement('td');
+    tdQ.textContent = currentList[idx].tpl;
+
+    const tdU = document.createElement('td');
+    tdU.textContent = chosen || '(no answer)';
+    tdU.style.color = ok ? '#2ea44f' : '#ff7a7a';
+
+    const tdC = document.createElement('td');
+    tdC.textContent = correct;
+    tdC.style.color = '#2ea44f';
+
+    const tdE = document.createElement('td');
+    tdE.textContent = explanation;
+
+    tr.append(tdQ, tdU, tdC, tdE);
+    feedbackBody.appendChild(tr);
+  });
+
+  feedback.style.display = 'block';
+  resultNode.textContent = `Score: ${score} / ${currentList.length}`;
+
+  // ✅ UNA SOLA VEZ
+  updateStats(cfg.title, currentList.length, score);
+}
+
+function applyCount(n) {
+  let k = parseInt(n, 10);
+  if (isNaN(k) || k < 1) k = cfg.defaultCount;
+
+  // si no quedan suficientes preguntas, ajusta
+  if (pool.length < k) {
+    k = pool.length;
+  }
+
+  inputCount.value = k;
+
+  // consumir preguntas sin repetir
+currentList = pool.splice(0, k);
+render(currentList);
+updateRemaining(); // 🔥 NUEVO
+if (pool.length === 0) {
+  remainingNode.textContent = 'No quedan más preguntas 🎉';
+}
+}
+  btnApply.onclick = () => applyCount(inputCount.value);
+  btnRefresh.onclick = () => {
+  initPool();                  // reinicia preguntas
+  applyCount(inputCount.value);
+};
+  btnCheck.onclick = correct;
+
+initPool();
+applyCount(cfg.defaultCount);
+}
+
+/* ----- ejemplo de inicialización  ----- */
+document.addEventListener('DOMContentLoaded', () => {
+  // ======== EXPANDIR NOTAS JAVA ========
+const notesJava = document.getElementById('main-prog-notes-java');
+const expandBtnJava = document.getElementById('expand-notes-java');
+
+expandBtnJava.addEventListener('click', () => {
+  // guardar posición original
+  notesJava._originalParent = notesJava.parentElement;
+  notesJava._originalNext = notesJava.nextSibling;
+
+  notesJava.classList.remove('notes-collapsed');
+  notesJava.classList.add('notes-expanded');
+
+  document.body.appendChild(notesJava);
+  notesJava.focus();
+});
+
+// ESC para cerrar
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (!notesJava.classList.contains('notes-expanded')) return;
+
+  notesJava.classList.remove('notes-expanded');
+  notesJava.classList.add('notes-collapsed');
+
+  if (notesJava._originalParent) {
+    notesJava._originalParent.insertBefore(
+      notesJava,
+      notesJava._originalNext
+    );
+  }
+});
+
+ // LENGUAJE DE MARCADO
+initPractice(document.getElementById('html'), html, { title: 'Quiz HTML', defaultCount: 5 });
+initPractice(document.getElementById('css'), css, { title: 'Quiz CSS', defaultCount: 5 });
+initPractice(document.getElementById('lm'), lm, { title: 'Quiz LM', defaultCount: 5 });
+initPractice(document.getElementById('xml'), xml, { title: 'Quiz XML', defaultCount: 5 });
+// JAVA
+initPractice(document.getElementById('programacionEstructurada'), programacionEstructurada, { title: 'Quiz Programación Estructurada', defaultCount: 5 });
+initPractice(document.getElementById('StringsArrays'), StringsArrays, { title: 'Quiz Strings y Arrays', defaultCount: 5 });
+initPractice(document.getElementById('Poo'), Poo, { title: 'Quiz Poo', defaultCount: 5 });
+initPractice(document.getElementById('Poo'), Poo, { title: 'Quiz Poo', defaultCount: 5 });
+initPractice(document.getElementById('Colecciones'), Colecciones, { title: 'Quiz Colecciones', defaultCount: 5 });
+initPractice(document.getElementById('ExcepcionesFicheros'), ExcepcionesFicheros, { title: 'Quiz Excepciones Ficheros', defaultCount: 5 });
+// initPractice(document.getElementById('BBDD'), BBDD, { title: 'Quiz BBDD', defaultCount: 5 });
+
+
+});
+</script>
+
+
+</body>
+</html>
